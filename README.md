@@ -12,6 +12,7 @@
 | `UPD_NAME`       | Change username                             |
 | `VIEW_ALL_USERS` | View all users in the system                |
 | `VIEW_ALL_GROUPS`| View all groups in the system               |
+| `EXIT`           | Exit from the app and close the connection  |
 
 ## Error Messages
 
