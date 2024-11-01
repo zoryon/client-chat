@@ -1,6 +1,6 @@
 package com.clientchat.protocol;
 
-public enum ErrorMessage {
+public enum ErrorType {
     ERR_GEN("General server error"),
     ERR_NOT_FOUND("User not found"),
     ERR_CHAT_EXISTS("Private chat already exists"),
@@ -9,7 +9,7 @@ public enum ErrorMessage {
 
     private final String description;
 
-    ErrorMessage(String description) {
+    ErrorType(String description) {
         this.description = description;
     }
 
