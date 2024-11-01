@@ -2,7 +2,8 @@ package com.clientchat.protocol;
 
 public enum CommandType {
     // general commands
-    USR_INIT("Initialize user session (NEW or OLD)"),
+    NEW_USER("Register new user"),
+    OLD_USER("Login old user"),
     REQ_CHATS("Request information about user chats (userId)"),
     DEL_USER("Request to delete user information"),
     MENU_BACK("Return to the main menu"),
@@ -13,6 +14,7 @@ public enum CommandType {
     VIEW_ALL_USERS("View all users in the system"),
     VIEW_ALL_GROUPS("View all groups in the system"),
     EXIT("Exit from the app and close the connection"),
+    OK("The previous command was executed"),
 
     // chat management
     NEW_CHAT("Initiate a new private chat"),
