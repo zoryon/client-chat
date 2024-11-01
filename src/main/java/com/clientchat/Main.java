@@ -1,8 +1,8 @@
 package com.clientchat;
+
 import com.clientchat.protocol.CommandType;
 import com.clientchat.protocol.JsonUser;
 import com.google.gson.*;
-
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -11,9 +11,9 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Scanner;
 
-
 public class Main {
     public static void main(String[] args) throws UnknownHostException, IOException {
+        @SuppressWarnings("resource") // suppressing --> never closed socket warning
         // client socket creation
         Socket socket = new Socket("localhost", 3000);
 
@@ -29,20 +29,47 @@ public class Main {
         // get user input from keyboard
         Scanner keyboard = new Scanner(System.in);
 
+        // store command res
+        CommandType res;
+
         // main loop
         String choice;
         do {
             printAuthMenu(); 
+            // wating --> user choice
             choice = keyboard.nextLine(); 
 
             switch (choice) {
                 case "1":
+                    // sending --> signup a new user req
                     sendAuthReq(out, keyboard, CommandType.NEW_USER);
+
+                    // waiting --> server validation
+                    res = catchCommandRes(in);
+
+                    if (res == CommandType.OK) {
+                        // TODO: show success message
+                        // TODO: automatically signin the user
+                    } else {
+                        // TODO: show error message (sout --> res)
+                        // TODO: show the menu again (loop)
+                    }
                     break;
                 case "2":
+                    // sending --> signin an existing user req
                     sendAuthReq(out, keyboard, CommandType.OLD_USER);
+
+                    // waiting --> user validation
+                    res = catchCommandRes(in);
+                    if (res == CommandType.OK) {
+                        // TODO: show success message
+                    } else {
+                        // TODO: show error message (sout --> res)
+                        // TODO: show the menu again (loop)
+                    }
                     break;
                 case "0":
+                    // sending --> exit req
                     sendReq(out, CommandType.EXIT);
                     break;
                 default:
@@ -50,11 +77,10 @@ public class Main {
             }
         } while (!choice.equals("0"));
 
-        // close the resources
+        // closing the resources
         keyboard.close();
         in.close();
         out.close();
-        socket.close();
     }
 
     public static String newLine() {
@@ -73,8 +99,11 @@ public class Main {
         return in.readLine();
     }
 
+    public static CommandType catchCommandRes(BufferedReader in) throws IOException {
+        return CommandType.valueOf(catchRes(in));
+    }
+
     public static void sendReq(DataOutputStream out, CommandType command) throws IOException {
-        System.out.println(command.toString());
         out.writeBytes(command.toString() + newLine());
     }
 
@@ -89,7 +118,6 @@ public class Main {
         System.out.print("Insert password: ");
         user.setPassword(keyboard.nextLine());
 
-        System.out.println(new Gson().toJson(user).toString() + newLine());
         out.writeBytes(new Gson().toJson(user).toString() + newLine());
     }
 }
