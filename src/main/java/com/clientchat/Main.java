@@ -1,9 +1,5 @@
 package com.clientchat;
 
-import com.clientchat.auth.AuthManager;
-import com.clientchat.protocol.CommandType;
-import com.clientchat.protocol.JsonUser;
-import com.google.gson.*;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
