@@ -43,17 +43,13 @@ public class AuthService extends Service implements Runnable {
                     ChatService.getInstance(super.socket).run();
                 }
             }
-        } catch (IOException e) {
-            System.out.println("Unexpected error: " + e);
-        }
 
-        // closing resources when the user exit
-        try {
+            // closing resources when the user exit
             super.keyboard.close();
             super.in.close();
             super.out.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Unexpected error: " + e);
         }
     }
 
