@@ -66,7 +66,7 @@ public class AuthService extends Service implements Runnable {
                 handleSignIn();
                 break;
             case "0":
-                handleExit();
+                super.handleExit();
                 break;
             default:
                 System.out.println("Unknown option. Please try again.");
