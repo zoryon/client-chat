@@ -3,10 +3,9 @@ package com.clientchat;
 import com.clientchat.services.AuthService;
 import java.io.IOException;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
 public class Main {
-    public static void main(String[] args) throws UnknownHostException, IOException {
+    public static void main(String[] args) throws Exception {
         try {
             Socket socket = new Socket("localhost", 3000);
 
