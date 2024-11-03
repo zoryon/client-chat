@@ -6,7 +6,7 @@ import com.clientchat.protocol.JsonUser;
 import java.io.IOException;
 import java.net.Socket;
 
-public class AuthService extends Service implements Runnable {
+public class AuthService extends Service {
     // attributes
     private static AuthService instance;
     private final AuthManager authManager;
@@ -25,8 +25,7 @@ public class AuthService extends Service implements Runnable {
         return instance;
     }
 
-    // main body --> runned fn when thread starts
-    @Override
+    // main body --> fn to run
     public void run() {
         try {
             while (Service.isRunning) {

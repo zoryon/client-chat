@@ -10,7 +10,7 @@ public class Main {
             Socket socket = new Socket("localhost", 3000);
 
             // auth service + chat service
-            new Thread(AuthService.getInstance(socket)).start();
+            AuthService.getInstance(socket).run();
         } catch (IOException e) {
             System.err.println("Error during client execution: " + e.getMessage());
         }

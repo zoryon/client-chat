@@ -2,18 +2,25 @@ package com.clientchat.services;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.List;
 
 import com.clientchat.protocol.CommandType;
+import com.clientchat.protocol.JsonChat;
 import com.clientchat.protocol.JsonUser;
 
 public class ChatService extends Service {
     // attributes
     private static ChatService instance;
-    String choice;
+    private final EventListenerService eventListener;
+    private String choice;
 
     // constructors
     private ChatService(Socket socket) throws IOException {
         super(socket);
+        this.eventListener = EventListenerService.getInstance(socket);
+
+        // start the listener service to get up-to-date data
+        new Thread(eventListener).start();
     }
 
     // only one instance can exists at a time
@@ -26,8 +33,6 @@ public class ChatService extends Service {
 
     // main body --> fn to run
     public void run() throws IOException {
-        // TODO: get chat array from the server
-
         do {
             printMenu();
             choice = super.keyboard.nextLine();
@@ -35,6 +40,10 @@ public class ChatService extends Service {
             switch (choice) {
                 case "1":
                     System.out.println("Hai scelto 1!");
+                    List<JsonChat> tmp = eventListener.getAllChats();
+                    for (JsonChat chat : tmp) {
+                        System.out.println(chat.getId());
+                    }
                     break;
                 case "2":
                     System.out.println("Hai scelto 2!");
@@ -79,7 +88,7 @@ public class ChatService extends Service {
     }
 
     private void handleViewLoggedUser() throws IOException {
-        super.sendReq(CommandType.VIEW_LOGGED_USER);
+        super.sendReq(CommandType.REQ_LOGGED_USER);
         CommandType res = super.catchCommandRes();
 
         if (super.isSuccess(res)) {
