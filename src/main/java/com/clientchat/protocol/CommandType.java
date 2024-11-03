@@ -11,10 +11,12 @@ public enum CommandType {
     SEND_MSG("Send a new message"),
     RM_MSG("Remove a message"),
     UPD_NAME("Change username"),
+    VIEW_LOGGED_USER("View information regarding the logged in user"),
     VIEW_ALL_USERS("View all users in the system"),
     VIEW_ALL_GROUPS("View all groups in the system"),
-    EXIT("Exit from the app and close the connection"),
+    LOGOUT("Logout from the current account"),
     OK("The previous command was executed successfully"),
+    EXIT("Exit from the app and close the connection"),
 
     // chat management
     NEW_CHAT("Initiate a new private chat"),

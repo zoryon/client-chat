@@ -3,7 +3,6 @@ package com.clientchat.services;
 import com.clientchat.auth.AuthManager;
 import com.clientchat.protocol.CommandType;
 import com.clientchat.protocol.JsonUser;
-import com.google.gson.Gson;
 import java.io.IOException;
 import java.net.Socket;
 
@@ -18,6 +17,7 @@ public class AuthService extends Service implements Runnable {
         this.authManager = AuthManager.getInstance();
     }
 
+    // only one instance can exists at a time
     public static AuthService getInstance(Socket socket) throws IOException {
         if (instance == null) {
             instance = new AuthService(socket);
@@ -44,7 +44,7 @@ public class AuthService extends Service implements Runnable {
                 }
             }
 
-            // closing resources when the user exit
+            // closing resources on connection closed
             super.keyboard.close();
             super.in.close();
             super.out.close();
@@ -53,7 +53,7 @@ public class AuthService extends Service implements Runnable {
         }
     }
 
-    // functions
+    // private methods --> can only be seen inside this class
     private void handleAuthenticationMenu() throws IOException {
         printAuthMenu();
         String choice = super.keyboard.nextLine();
@@ -122,15 +122,6 @@ public class AuthService extends Service implements Runnable {
         // send the command to let the server know what to expect
         super.sendReq(command);
         // send the user in json format
-        super.out.writeBytes(new Gson().toJson(user) + super.newLine());
-    }
-
-    protected void delay() {
-        // add a small delay to prevent excessive CPU usage
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        super.out.writeBytes(super.gson.toJson(user) + super.newLine());
     }
 }

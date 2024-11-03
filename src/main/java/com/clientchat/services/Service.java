@@ -1,6 +1,8 @@
 package com.clientchat.services;
 
 import com.clientchat.protocol.CommandType;
+import com.google.gson.Gson;
+
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -9,19 +11,24 @@ import java.net.Socket;
 import java.util.Scanner;
 
 public class Service {
+    // attributes
     protected final Socket socket;
     protected final BufferedReader in;
     protected final DataOutputStream out;
     protected final Scanner keyboard;
     protected static boolean isRunning = true;
+    protected final Gson gson;
 
+    // constructors
     public Service(Socket socket) throws IOException {
         this.socket = socket;
         this.keyboard = new Scanner(System.in);
         this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         this.out = new DataOutputStream(socket.getOutputStream());
+        this.gson = new Gson();
     }
 
+    // protected methods --> can only be seen inside services package
     protected String newLine() {
         return System.lineSeparator();
     }
@@ -36,7 +43,7 @@ public class Service {
     }
 
     protected void sendReq(CommandType command) throws IOException {
-        out.writeBytes(command + System.lineSeparator());
+        out.writeBytes(command + newLine());
     }
 
     protected boolean isSuccess(CommandType res) {

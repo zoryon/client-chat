@@ -1,14 +1,17 @@
 package com.clientchat.protocol;
 
 public class JsonUser {
+    // attributes
     private String username;
     private String password;
 
+    // constructors
     public JsonUser(String username, String password) {
         this.username = username;
         this.password = password;
     }
 
+    // methods
     public String getUsername() {
         return username;
     }
