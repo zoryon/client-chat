@@ -3,8 +3,6 @@ package com.clientchat.services;
 import java.io.IOException;
 import java.net.Socket;
 
-import com.clientchat.auth.AuthManager;
-
 public class ChatService extends Service {
     private static ChatService instance;
 
