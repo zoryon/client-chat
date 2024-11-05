@@ -45,10 +45,7 @@ public class ChatService extends Service {
                     handleConnectToChat();
                     break;
                 case "3":
-                    handleViewLoggedUser();
-                    break;
-                case "4":
-                    handleLogout();
+                    handleViewProfile();
                     break;
                 case "0":
                     super.handleExit();
@@ -65,26 +62,12 @@ public class ChatService extends Service {
         System.out.println("1) View all chats");
         System.out.println("2) Connect to a chat");
         System.out.println("3) See own profile");
-        System.out.println("4) Logout");
         System.out.println("0) Exit");
         System.out.print(": ");
     }
 
-    private void handleLogout() throws IOException {
-        super.sendReq(CommandType.LOGOUT.toString());
-        CommandType res = super.catchCommandRes();
-
-        if (super.isSuccess(res)) {
-            // set choice to "0" to leave this loop, without exiting the app
-            // this send the user to the auth menu
-            choice = "0";
-        } else {
-            System.out.println(res.getDescription());
-        }
-    }
-
-    private void handleViewLoggedUser() throws IOException {
-        System.out.println("You are logged in as: " + AuthManager.getInstance().getUsername());
+    private void handleViewProfile() throws IOException {
+        if (ProfileService.getInstance(socket).run()) choice = "0";
     }
 
     private void handleConnectToChat() throws IOException {
@@ -116,9 +99,9 @@ public class ChatService extends Service {
                         );
                         CommandType ok = catchCommandRes();
                         if (isSuccess(ok)) {
-                            System.out.print(" - Successfully sent");
+                            System.out.print("- Successfully sent");
                         } else {
-                            System.out.print(" - Error: " + ok.getDescription());
+                            System.out.print("- Error: " + ok.getDescription());
                         }
                 }
             } while (!tmp.equals("/exit"));
