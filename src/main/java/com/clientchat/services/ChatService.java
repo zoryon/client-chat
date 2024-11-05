@@ -2,8 +2,6 @@ package com.clientchat.services;
 
 import java.io.IOException;
 import java.net.Socket;
-
-import com.clientchat.auth.AuthManager;
 import com.clientchat.protocol.CommandType;
 import com.clientchat.protocol.JsonMessage;
 

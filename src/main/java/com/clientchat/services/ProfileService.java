@@ -2,9 +2,7 @@ package com.clientchat.services;
 
 import java.io.IOException;
 import java.net.Socket;
-
 import com.clientchat.auth.AuthManager;
-import com.clientchat.protocol.CommandType;
 
 public class ProfileService extends Service {
     // attributes
