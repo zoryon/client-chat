@@ -42,8 +42,12 @@ public class Service {
         return CommandType.valueOf(catchRes());
     }
 
-    protected void sendReq(CommandType command) throws IOException {
-        out.writeBytes(command + newLine());
+    protected void sendReq(String req) throws IOException {
+        out.writeBytes(req + newLine());
+    }
+
+    protected void sendJsonReq(Object req) throws IOException {
+        out.writeBytes(gson.toJson(req) + newLine());
     }
 
     protected boolean isSuccess(CommandType res) {
@@ -51,7 +55,7 @@ public class Service {
     }
 
     protected void handleExit() throws IOException {
-        sendReq(CommandType.EXIT);
+        sendReq(CommandType.EXIT.toString());
         Service.isRunning = false;
         System.out.println("Thank you for having trusted us!");
     }

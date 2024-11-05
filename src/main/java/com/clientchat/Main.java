@@ -7,7 +7,8 @@ import java.net.Socket;
 public class Main {
     public static void main(String[] args) throws Exception {
         try {
-            Socket socket = new Socket("localhost", 3000);
+            // "10.22.9.10"
+            Socket socket = new Socket("10.22.9.10", 3000);
 
             // auth service + chat service
             AuthService.getInstance(socket).run();

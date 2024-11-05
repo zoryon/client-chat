@@ -2,11 +2,9 @@ package com.clientchat.services;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.util.List;
 
+import com.clientchat.auth.AuthManager;
 import com.clientchat.protocol.CommandType;
-import com.clientchat.protocol.JsonChat;
-import com.clientchat.protocol.JsonUser;
 
 public class ChatService extends Service {
     // attributes
@@ -39,14 +37,11 @@ public class ChatService extends Service {
 
             switch (choice) {
                 case "1":
-                    System.out.println("Hai scelto 1!");
-                    List<JsonChat> tmp = eventListener.getAllChats();
-                    for (JsonChat chat : tmp) {
-                        System.out.println(chat.getId());
-                    }
+                    System.out.println("Your chats:");
+                    eventListener.printAllChats();
                     break;
                 case "2":
-                    System.out.println("Hai scelto 2!");
+                    handleConnectToChat();
                     break;
                 case "3":
                     handleViewLoggedUser();
@@ -60,7 +55,7 @@ public class ChatService extends Service {
                 default:
                     System.out.println("Unknown option. Please try again.");
             }
-        } while(!choice.equals("0"));
+        } while (!choice.equals("0"));
     }
 
     // private methods --> can only be seen inside this class
@@ -75,7 +70,7 @@ public class ChatService extends Service {
     }
 
     private void handleLogout() throws IOException {
-        super.sendReq(CommandType.LOGOUT);
+        super.sendReq(CommandType.LOGOUT.toString());
         CommandType res = super.catchCommandRes();
 
         if (super.isSuccess(res)) {
@@ -88,15 +83,38 @@ public class ChatService extends Service {
     }
 
     private void handleViewLoggedUser() throws IOException {
-        super.sendReq(CommandType.REQ_LOGGED_USER);
-        CommandType res = super.catchCommandRes();
+        System.out.println("You are logged in as: " + AuthManager.getInstance().getUsername());
+    }
 
-        if (super.isSuccess(res)) {
-            // TODO: the SERVER should SEND a JsonUser with PASSWORD set to NULL
-            JsonUser user = super.gson.fromJson(catchRes(), JsonUser.class);
-            System.out.println("You are logged in as: " + user.getUsername());
+    private void handleConnectToChat() throws IOException {
+        // move to a specific chat
+        super.sendReq(CommandType.NAV_CHAT.toString());
+
+        // get chat identifier and send it to the server
+        System.out.print("Insert chat identifier (chatName#chatId): ");
+        String chatToSend = super.keyboard.nextLine();
+        super.sendJsonReq(chatToSend);
+
+        CommandType res = super.catchCommandRes();
+        if (isSuccess(res)) {
+            String tmp;
+            do {
+                // TODO: create JsonMessage
+                super.sendReq(CommandType.SEND_MSG.toString());
+                super.sendJsonReq(chatToSend);
+
+                tmp = super.keyboard.nextLine();
+
+                switch (tmp) {
+
+                    case "/exit":
+                        break;
+                    default:
+                        super.sendJsonReq(tmp);
+                }
+            } while (!tmp.equals("/exit"));
         } else {
-            System.out.println(res.getDescription());
+            System.out.println("Error: " + res);
         }
     }
 }

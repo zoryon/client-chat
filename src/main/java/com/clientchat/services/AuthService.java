@@ -82,7 +82,7 @@ public class AuthService extends Service {
             System.out.println("You'll automatically be signed in");
             authManager.authenticate(user.getUsername());
         } else {
-            System.out.println("Error" + res.getDescription());
+            System.out.println("Error: " + res.getDescription());
         }
     }
 
@@ -95,7 +95,7 @@ public class AuthService extends Service {
             System.out.println("Successfully signed in!");
             authManager.authenticate(user.getUsername());
         } else {
-            System.out.println("Error" + res.getDescription());
+            System.out.println("Error: " + res.getDescription());
         }
     }
 
@@ -119,8 +119,8 @@ public class AuthService extends Service {
 
     private void sendAuthReq(CommandType command, JsonUser user) throws IOException {
         // send the command to let the server know what to expect
-        super.sendReq(command);
+        super.sendReq(command.toString());
         // send the user in json format
-        super.out.writeBytes(super.gson.toJson(user) + super.newLine());
+        sendJsonReq(user);
     }
 }
