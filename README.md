@@ -4,15 +4,17 @@
 |------------------|---------------------------------------------  |
 | `NEW_USER`       | Register new user and initialize user session |
 | `OLD_USER`       | Initialize user session                       |
-| `REQ_CHATS`      | Request information about user chats (userId) |
+| `REQ_ALL_CHATS`  | Request information about user chats (userId) |
 | `DEL_USER`       | Request to delete user information            |
 | `MENU_BACK`      | Return to the main menu                       |
 | `NAV_CHAT`       | Navigate to specified chat or group           |
 | `SEND_MSG`       | Send a new message                            |
 | `RM_MSG`         | Remove a message                              |
 | `UPD_NAME`       | Change username                               |
-| `VIEW_ALL_USERS` | View all users in the system                  |
-| `VIEW_ALL_GROUPS`| View all groups in the system                 |
+| `REQ_LOGGED_USER`| View information regarding the logged in user |
+| `REQ_ALL_USERS`  | View all users in the system                  |
+| `REQ_ALL_GROUPS` | View all groups in the system                 |
+| `LOGOUT`         | Logout from the current account               |  
 | `EXIT`           | Exit from the app and close the connection    |
 | `OK`             | The previous command was executed successfully|
 
@@ -37,4 +39,4 @@
 | `RM_ADMIN`       | Remove admin privileges from a user           |
 | `UPD_GROUP_NAME` | Change the name of a group                    |
 | `CREATE_GROUP`   | Create a new group                            |
-| `VIEW_GROUP_USERS`| View users in a specific group               |
+| `REQ_GROUP_USER` | View users in a specific group                |

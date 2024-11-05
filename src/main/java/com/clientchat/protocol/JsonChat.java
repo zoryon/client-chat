@@ -5,31 +5,38 @@ import java.util.ArrayList;
 public class JsonChat {
     // attributes
     private int id;
-    private String username1;
-    private String username2;
-    private ArrayList<String> messages;
+    private String chatName;
+    private ArrayList<JsonMessage> messages;
 
     // constructors
-    public JsonChat(int id, String username1, String username2, ArrayList<String> messages) {
+    public JsonChat(int id, String chatName) {
         this.id = id;
-        this.username1 = username1;
-        this.username2 = username2;
-        this.messages = messages;
+        this.chatName = chatName;
+        this.messages = new ArrayList<>();
     }
 
-    // methods
+    // getters and setters
     public int getId() {
         return id;
     }
     
-    public ArrayList<String> getMessages() {
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getChatName() {
+        return chatName;
+    }
+
+    public void setChatName(String chatName) {
+        this.chatName = chatName;
+    }
+
+    public ArrayList<JsonMessage> getMessages() {
         return messages;
     }
-    
-    public ArrayList<String> getParticipants() {
-        ArrayList<String> ans = new ArrayList<>();
-        ans.add(username1);
-        ans.add(username2);
-        return ans;
-    }
+
+    public void setMessages(ArrayList<JsonMessage> messages) {
+        this.messages = messages;
+    } 
 }

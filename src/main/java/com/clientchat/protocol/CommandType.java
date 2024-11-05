@@ -26,14 +26,15 @@ public enum CommandType {
     RM_ADMIN("Remove admin privileges from a user"),
     UPD_GROUP_NAME("Change the name of a group"),
     CREATE_GROUP("Create a new group"),
-    VIEW_GROUP_USERS("View users in a specific group"),
+    REQ_GROUP_USER("View users in a specific group"),
 
     // error messages
     ERR_GEN("General server error"),
     ERR_NOT_FOUND("User not found"),
     ERR_CHAT_EXISTS("Private chat already exists"),
     ERR_USER_EXISTS("Username already in use"),
-    ERR_DISCONNECT("Client has disconnected");
+    ERR_DISCONNECT("Client has disconnected"),
+    ERR_WRONG_DATA("The data entered is incorrect");
 
     private final String description;
 
