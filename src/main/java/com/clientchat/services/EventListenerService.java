@@ -35,7 +35,6 @@ public class EventListenerService extends Service implements Runnable {
             // then start listening for updates
             while (Service.isRunning) {
                 CommandType command = super.catchCommandRes();
-
                 switch (command) {
                     default:
                 }
@@ -59,6 +58,7 @@ public class EventListenerService extends Service implements Runnable {
     // private methods --> can only be seen inside this class
     private void catchInitialChats() throws IOException {
         String jsonChatList = super.catchRes();
+
         chatList = super.gson.fromJson(
             jsonChatList,
             new TypeToken<ArrayList<JsonChat>>() {}.getType()

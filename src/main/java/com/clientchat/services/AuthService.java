@@ -35,7 +35,7 @@ public class AuthService extends Service {
                     System.out.println("\nLogged in as: " + authManager.getUsername());
 
                     /* 
-                        ChatService.run() is not a thread, it simulates a main from another class
+                        ChatService.run() is not a thread, it simulates a main from another class.
                         basically, this thread will be waiting ChatService to finish
                         before continuing with the loop 
                     */
@@ -45,8 +45,8 @@ public class AuthService extends Service {
 
             // closing resources on connection closed
             super.keyboard.close();
-            super.in.close();
             super.out.close();
+            super.in.close();
         } catch (IOException e) {
             System.out.println("Unexpected error: " + e);
         }

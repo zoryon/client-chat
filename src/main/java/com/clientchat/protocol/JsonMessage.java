@@ -11,12 +11,14 @@ public class JsonMessage {
     private String content;
     
     // constructors
-    public JsonMessage(int chatId, int senderId, String senderName, String content) {
-        this.id = 0;
+    public JsonMessage(int chatId, String content) {
         this.chatId = chatId;
-        this.senderId = senderId;
-        this.senderName = senderName;
         this.content = content;
+
+        // the server will modify these
+        this.id = 0;
+        this.senderId = 0;
+        this.senderName = null;
     }
 
     // getters and setters

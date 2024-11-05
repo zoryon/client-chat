@@ -5,6 +5,7 @@ import java.net.Socket;
 
 import com.clientchat.auth.AuthManager;
 import com.clientchat.protocol.CommandType;
+import com.clientchat.protocol.JsonMessage;
 
 public class ChatService extends Service {
     // attributes
@@ -87,30 +88,38 @@ public class ChatService extends Service {
     }
 
     private void handleConnectToChat() throws IOException {
+        // get chat identifier
+        System.out.print("Insert chat identifier (chatName#chatId): ");
+        String chatToSend = super.keyboard.nextLine();
+
         // move to a specific chat
         super.sendReq(CommandType.NAV_CHAT.toString());
 
-        // get chat identifier and send it to the server
-        System.out.print("Insert chat identifier (chatName#chatId): ");
-        String chatToSend = super.keyboard.nextLine();
+        // send chat identifier to server
         super.sendJsonReq(chatToSend);
 
         CommandType res = super.catchCommandRes();
         if (isSuccess(res)) {
             String tmp;
             do {
-                // TODO: create JsonMessage
-                super.sendReq(CommandType.SEND_MSG.toString());
-                super.sendJsonReq(chatToSend);
-
                 tmp = super.keyboard.nextLine();
-
                 switch (tmp) {
-
                     case "/exit":
-                        break;
+                    break;
                     default:
-                        super.sendJsonReq(tmp);
+                        super.sendReq(CommandType.SEND_MSG.toString());
+                        super.sendJsonReq(
+                            new JsonMessage(
+                                Integer.parseInt(chatToSend.split("#")[1]), 
+                                tmp
+                            )
+                        );
+                        CommandType ok = catchCommandRes();
+                        if (isSuccess(ok)) {
+                            System.out.print(" - Successfully sent");
+                        } else {
+                            System.out.print(" - Error: " + ok.getDescription());
+                        }
                 }
             } while (!tmp.equals("/exit"));
         } else {

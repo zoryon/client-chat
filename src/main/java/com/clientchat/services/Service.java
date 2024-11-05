@@ -1,8 +1,8 @@
 package com.clientchat.services;
 
+import com.clientchat.lib.SynchronizedBufferedReader;
 import com.clientchat.protocol.CommandType;
 import com.google.gson.Gson;
-
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -13,7 +13,8 @@ import java.util.Scanner;
 public class Service {
     // attributes
     protected final Socket socket;
-    protected final BufferedReader in;
+    protected final BufferedReader tmp;
+    protected final SynchronizedBufferedReader in;
     protected final DataOutputStream out;
     protected final Scanner keyboard;
     protected static boolean isRunning = true;
@@ -23,7 +24,8 @@ public class Service {
     public Service(Socket socket) throws IOException {
         this.socket = socket;
         this.keyboard = new Scanner(System.in);
-        this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        tmp = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        in = new SynchronizedBufferedReader(tmp);
         this.out = new DataOutputStream(socket.getOutputStream());
         this.gson = new Gson();
     }
