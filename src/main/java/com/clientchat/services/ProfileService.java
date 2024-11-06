@@ -21,11 +21,11 @@ public class ProfileService extends Service {
         // initialize menu
         super.initializeMenuOptions(
             new MenuBuilder()
-            .addOption("1", "Change username", ActionUtils.wrapAction(this::handleChangeUsername))
-            .addOption("2", "Logout", ActionUtils.wrapAction(this::handleLogout))
-            .addOption("3", "Back", ActionUtils.wrapAction(this::handleBack))
-            .addOption("0", "Exit", ActionUtils.wrapAction(super::handleExit))
-            .build()
+                .addOption("1", "Change username", ActionUtils.wrapAction(this::handleChangeUsername))
+                .addOption("2", "Logout", ActionUtils.wrapAction(this::handleLogout))
+                .addOption("3", "Back", ActionUtils.wrapAction(this::handleBack))
+                .addOption("0", "Exit", ActionUtils.wrapAction(super::handleExit))
+                .build()
         );
     }
 
@@ -37,14 +37,22 @@ public class ProfileService extends Service {
         return instance;
     }
 
-    // MENU OPTIONS --> initialize
-
-    // main body --> fn to run
+    /*
+     * main body (NOT A THREAD) --> fn to run.
+     * it's just to divide code in many files, instead of a single one
+     */
     public boolean run() throws IOException {
         do {
-            MenuOption.printMenu("- - - " + AuthManager.getInstance().getUsername() + "'s" + " PROFILE - - -", super.menuOptions);
+            MenuOption.printMenu("- - - " + AuthManager.getInstance().getUsername() + "'s" + " PROFILE - - -",
+                    super.menuOptions);
+
+            // get the choice from the user
             choice = super.keyboard.nextLine().trim();
-            com.clientchat.lib.MenuOption selectedOption = super.menuOptions.getOrDefault(choice, new MenuOption("Unknown option", super::handleUnknownOption));
+
+            // get the action to perform based on the user's choice
+            MenuOption selectedOption = super.menuOptions.getOrDefault(choice, new MenuOption("Unknown option", super::handleUnknownOption));
+
+            // run the passed fn related to the user's choice
             selectedOption.getAction().run();
         } while (!choice.equals("0"));
 
@@ -65,6 +73,7 @@ public class ProfileService extends Service {
             System.out.println("Successfully changed username to: " + newUsername);
         }
 
+        // as server sends NULL here, we clear the input stream
         super.cleanBuffer();
     }
 
@@ -73,8 +82,10 @@ public class ProfileService extends Service {
         res = super.catchCommandRes();
 
         if (super.isSuccess(res)) {
-            // set choice to "0" to leave this loop, without exiting the app
-            // this send the user to the auth menu
+            /*
+             * set choice to "0" to leave this loop, without exiting the app.
+             * this send the user to the auth menu
+             */
             AuthManager.getInstance().logout();
             choice = "0";
         } else {
@@ -85,8 +96,10 @@ public class ProfileService extends Service {
     }
 
     private void handleBack() throws IOException {
-        // set choice to "0" to leave this loop, without exiting the app
-        // this send the user to the chat service menu
+        /*
+         * set choice to "0" to leave this loop, without exiting the app.
+         * this send the user to the service menu
+         */
         choice = "0";
     }
 }

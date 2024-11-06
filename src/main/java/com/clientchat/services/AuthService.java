@@ -17,7 +17,7 @@ public class AuthService extends Service {
     // constructors
     private AuthService(Socket socket) throws IOException {
         super(socket);
-        this.authManager = AuthManager.getInstance();
+        this.authManager = AuthManager.getInstance(); // equal to "new AuthManager()"
 
         // initialize menu
         super.initializeMenuOptions(
@@ -37,13 +37,18 @@ public class AuthService extends Service {
         return instance;
     }
 
-    // main body --> fn to run
+    /*  
+        main body (NOT A THREAD) --> fn to run.
+        it's just to divide code in many files, instead of a single one
+    */
     public void run() {
         try {
+            // everything will be run inside this loop
             while (Service.isRunning) {
                 if (!authManager.isAuthenticated()) {
                     handleAuthenticationMenu();
                 } else {
+                    // print the logged in username
                     System.out.println("\nLogged in as: " + authManager.getUsername());
 
                     /* 
@@ -67,9 +72,14 @@ public class AuthService extends Service {
     // private methods --> can only be seen inside this class
     private void handleAuthenticationMenu() throws IOException {
         MenuOption.printMenu("- - - AUTH MENU - - -", super.menuOptions);
+
+        // get the choice from the user
         String choice = super.keyboard.nextLine().trim();
 
+        // get the action to perform based on the user's choice
         MenuOption selectedOption = super.menuOptions.getOrDefault(choice, new MenuOption("Unknown option", super::handleUnknownOption));
+
+        // run the passed fn related to the user's choice
         selectedOption.getAction().run();
     }
 
@@ -79,13 +89,14 @@ public class AuthService extends Service {
         CommandType res = super.catchCommandRes();
 
         if (super.isSuccess(res)) {
-            System.out.println(newLine() + "Successfully registered!");
+            System.out.println(newLine() + "Successfully signed up!");
             System.out.println("You'll automatically be signed in");
             authManager.authenticate(user.getUsername());
         } else {
             System.out.println("Error: " + res.getDescription());
         }
 
+        // as server sends NULL here, we clear the input stream 
         super.cleanBuffer();
     }
 
@@ -101,6 +112,7 @@ public class AuthService extends Service {
             System.out.println("Error: " + res.getDescription());
         }
 
+        // as server sends NULL here, we clear the input stream 
         super.cleanBuffer();
     }
 
@@ -117,6 +129,7 @@ public class AuthService extends Service {
     private void sendAuthReq(CommandType command, JsonUser user) throws IOException {
         // send the command to let the server know what to expect
         super.sendReq(command.toString());
+
         // send the user in json format
         sendJsonReq(user);
     }

@@ -21,25 +21,34 @@ public class Service {
     protected final Scanner keyboard;
     protected final Gson gson;
     protected static boolean isRunning = true;
+
+    /*
+     * Basically an ArrayList,
+     * BUT, instead of an index, MAP
+     * binds a KEY to an object.
+     * In this case we bind the menu's number (0, 1, 2, 3) in STRING FORMAT
+     * to it's related MenuOption
+     */
     protected Map<String, MenuOption> menuOptions;
 
     // constructors
     public Service(Socket socket) throws IOException {
         this.socket = socket;
         this.keyboard = new Scanner(System.in);
-        tmp = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        in = new SynchronizedBufferedReader(tmp);
         this.out = new DataOutputStream(socket.getOutputStream());
         this.gson = new Gson();
+
+        this.tmp = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        this.in = new SynchronizedBufferedReader(tmp);
     }
 
     // protected methods --> can only be seen inside services package
     protected String newLine() {
-        return System.lineSeparator();
+        return System.lineSeparator(); // lineSeparator --> "\n"
     }
 
     protected String catchRes() throws IOException {
-        return in.readLine();
+        return in.readLine(); // wait for a socket stream input
     }
 
     protected CommandType catchCommandRes() throws IOException {
@@ -48,10 +57,12 @@ public class Service {
     }
 
     protected void sendReq(String req) throws IOException {
+        // send the String request in the socket output stream
         out.writeBytes(req + newLine());
     }
 
     protected void sendJsonReq(Object req) throws IOException {
+        // send the Object to socket output stream in JSON FORMAT
         out.writeBytes(gson.toJson(req) + newLine());
     }
 
@@ -66,14 +77,14 @@ public class Service {
     }
 
     protected void cleanBuffer() throws IOException {
-        // get NULL data
-        // clearing buffered reader from useless data
+        // clearing buffered reader from useless NULL data
         in.readLine();
     }
 
     protected void initializeMenuOptions(Map<String, MenuOption> menuOptions) {
+        // this is a SET fn
         this.menuOptions = menuOptions;
-    }; 
+    };
 
     protected void handleUnknownOption() {
         System.out.println("Unknown option. Please try again.");
