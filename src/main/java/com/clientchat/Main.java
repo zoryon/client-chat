@@ -15,7 +15,7 @@ public class Main {
              * basically, main will be waiting AuthService to finish
              * before continuing with the normal execution of the code.
              */
-            AuthService.getInstance(socket).run();
+            AuthService.getInstance(socket).run(); // equal to "new AuthService(socket).run()"
         } catch (IOException e) {
             System.err.println("Error during client execution: " + e.getMessage());
         }
