@@ -1,5 +1,6 @@
 package com.clientchat.services;
 
+import com.clientchat.lib.MenuOption;
 import com.clientchat.lib.SynchronizedBufferedReader;
 import com.clientchat.protocol.CommandType;
 import com.google.gson.Gson;
@@ -8,6 +9,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.util.Map;
 import java.util.Scanner;
 
 public class Service {
@@ -17,8 +19,9 @@ public class Service {
     protected final SynchronizedBufferedReader in;
     protected final DataOutputStream out;
     protected final Scanner keyboard;
-    protected static boolean isRunning = true;
     protected final Gson gson;
+    protected static boolean isRunning = true;
+    protected Map<String, MenuOption> menuOptions;
 
     // constructors
     public Service(Socket socket) throws IOException {
@@ -66,5 +69,13 @@ public class Service {
         // get NULL data
         // clearing buffered reader from useless data
         in.readLine();
+    }
+
+    protected void initializeMenuOptions(Map<String, MenuOption> menuOptions) {
+        this.menuOptions = menuOptions;
+    }; 
+
+    protected void handleUnknownOption() {
+        System.out.println("Unknown option. Please try again.");
     }
 }

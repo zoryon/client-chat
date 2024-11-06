@@ -1,6 +1,9 @@
 package com.clientchat.services;
 
 import com.clientchat.auth.AuthManager;
+import com.clientchat.lib.ActionUtils;
+import com.clientchat.lib.MenuBuilder;
+import com.clientchat.lib.MenuOption;
 import com.clientchat.protocol.CommandType;
 import com.clientchat.protocol.JsonUser;
 import java.io.IOException;
@@ -15,6 +18,15 @@ public class AuthService extends Service {
     private AuthService(Socket socket) throws IOException {
         super(socket);
         this.authManager = AuthManager.getInstance();
+
+        // initialize menu
+        super.initializeMenuOptions(
+            new MenuBuilder()
+            .addOption("1", "Sign up", ActionUtils.wrapAction(this::handleSignUp))
+            .addOption("2", "Sign in", ActionUtils.wrapAction(this::handleSignIn))
+            .addOption("0", "Exit", ActionUtils.wrapAction(super::handleExit))
+            .build()
+        );
     }
 
     // only one instance can exists at a time
@@ -54,22 +66,11 @@ public class AuthService extends Service {
 
     // private methods --> can only be seen inside this class
     private void handleAuthenticationMenu() throws IOException {
-        printAuthMenu();
+        MenuOption.printMenu("- - - AUTH MENU - - -", super.menuOptions);
         String choice = super.keyboard.nextLine().trim();
 
-        switch (choice) {
-            case "1":
-                handleSignUp();
-                break;
-            case "2":
-                handleSignIn();
-                break;
-            case "0":
-                super.handleExit();
-                break;
-            default:
-                System.out.println("Unknown option. Please try again.");
-        }
+        MenuOption selectedOption = super.menuOptions.getOrDefault(choice, new MenuOption("Unknown option", super::handleUnknownOption));
+        selectedOption.getAction().run();
     }
 
     private void handleSignUp() throws IOException {
@@ -111,14 +112,6 @@ public class AuthService extends Service {
         String password = super.keyboard.nextLine().trim();
 
         return new JsonUser(username, password);
-    }
-
-    private void printAuthMenu() {
-        System.out.println(super.newLine() + "- - - AUTH MENU - - -");
-        System.out.println("1) Sign Up");
-        System.out.println("2) Sign In");
-        System.out.println("0) Exit");
-        System.out.print(": ");
     }
 
     private void sendAuthReq(CommandType command, JsonUser user) throws IOException {

@@ -2,6 +2,9 @@ package com.clientchat.services;
 
 import java.io.IOException;
 import java.net.Socket;
+import com.clientchat.lib.ActionUtils;
+import com.clientchat.lib.MenuBuilder;
+import com.clientchat.lib.MenuOption;
 import com.clientchat.protocol.CommandType;
 import com.clientchat.protocol.JsonMessage;
 
@@ -18,6 +21,16 @@ public class ChatService extends Service {
 
         // start the listener service to get up-to-date data
         new Thread(eventListener).start();
+
+        // initialize menu
+        super.initializeMenuOptions(
+            new MenuBuilder()
+            .addOption("1", "View your chats", this::handleViewUserChats)
+            .addOption("2", "Connect to a chat", ActionUtils.wrapAction(this::handleConnectToChat))
+            .addOption("3", "See own profile", ActionUtils.wrapAction(this::handleViewProfile))
+            .addOption("0", "Exit", ActionUtils.wrapAction(super::handleExit))
+            .build()
+        );
     }
 
     // only one instance can exists at a time
@@ -31,37 +44,18 @@ public class ChatService extends Service {
     // main body --> fn to run
     public void run() throws IOException {
         do {
-            printMenu();
-            choice = super.keyboard.nextLine();
+            MenuOption.printMenu("- - - MENU - - -", super.menuOptions);
+            choice = super.keyboard.nextLine().trim();
 
-            switch (choice) {
-                case "1":
-                    System.out.println("Your chats:");
-                    eventListener.printAllChats();
-                    break;
-                case "2":
-                    handleConnectToChat();
-                    break;
-                case "3":
-                    handleViewProfile();
-                    break;
-                case "0":
-                    super.handleExit();
-                    break;
-                default:
-                    System.out.println("Unknown option. Please try again.");
-            }
+            MenuOption selectedOption = super.menuOptions.getOrDefault(choice, new MenuOption("Unknown option", super::handleUnknownOption));
+            selectedOption.getAction().run();
         } while (!choice.equals("0"));
     }
 
     // private methods --> can only be seen inside this class
-    private void printMenu() {
-        System.out.println(super.newLine() + "- - - MENU - - -");
-        System.out.println("1) View all chats");
-        System.out.println("2) Connect to a chat");
-        System.out.println("3) See own profile");
-        System.out.println("0) Exit");
-        System.out.print(": ");
+    private void handleViewUserChats() {
+        System.out.println("Your chats:");
+        eventListener.printAllChats();
     }
 
     private void handleViewProfile() throws IOException {
