@@ -60,7 +60,7 @@ public class EventListenerService extends Service implements Runnable {
         String jsonChatList = super.catchRes();
 
         chatList = super.gson.fromJson(
-            jsonChatList,
+            jsonChatList, 
             new TypeToken<ArrayList<JsonChat>>() {}.getType()
         );
     }

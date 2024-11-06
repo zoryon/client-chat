@@ -61,4 +61,10 @@ public class Service {
         Service.isRunning = false;
         System.out.println("Thank you for having trusted us!");
     }
+
+    protected void cleanBuffer() throws IOException {
+        // get NULL data
+        // clearing buffered reader from useless data
+        in.readLine();
+    }
 }

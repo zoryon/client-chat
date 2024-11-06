@@ -65,46 +65,35 @@ public class ChatService extends Service {
     }
 
     private void handleViewProfile() throws IOException {
-        if (ProfileService.getInstance(socket).run()) choice = "0";
+        if (ProfileService.getInstance(socket).run())
+            choice = "0";
     }
 
     private void handleConnectToChat() throws IOException {
         // get chat identifier
         System.out.print("Insert chat identifier (chatName#chatId): ");
-        String chatToSend = super.keyboard.nextLine();
+        String chatToSend = super.keyboard.nextLine().trim();
 
-        // move to a specific chat
-        super.sendReq(CommandType.NAV_CHAT.toString());
-
-        // send chat identifier to server
-        super.sendJsonReq(chatToSend);
-
-        CommandType res = super.catchCommandRes();
-        if (isSuccess(res)) {
-            String tmp;
-            do {
-                tmp = super.keyboard.nextLine();
-                switch (tmp) {
-                    case "/exit":
+        String tmp;
+        do {
+            // get the user text message
+            tmp = super.keyboard.nextLine();
+            switch (tmp) {
+                case "/exit":
                     break;
-                    default:
-                        super.sendReq(CommandType.SEND_MSG.toString());
-                        super.sendJsonReq(
-                            new JsonMessage(
-                                Integer.parseInt(chatToSend.split("#")[1]), 
-                                tmp
-                            )
-                        );
-                        CommandType ok = catchCommandRes();
-                        if (isSuccess(ok)) {
-                            System.out.print("- Successfully sent");
-                        } else {
-                            System.out.print("- Error: " + ok.getDescription());
-                        }
-                }
-            } while (!tmp.equals("/exit"));
-        } else {
-            System.out.println("Error: " + res);
-        }
+                default:
+                    super.sendReq(CommandType.SEND_MSG.toString());
+                    super.sendJsonReq(new JsonMessage(Integer.parseInt(chatToSend.split("#")[1]), tmp));
+                    CommandType ok = catchCommandRes();
+
+                    if (super.isSuccess(ok)) {
+                        System.out.print("- Successfully sent");
+                    } else {
+                        System.out.print("- Error: " + ok.getDescription());
+                    }
+
+                    super.cleanBuffer();
+            }
+        } while (!tmp.equals("/exit"));
     }
 }

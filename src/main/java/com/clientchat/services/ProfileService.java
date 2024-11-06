@@ -3,6 +3,7 @@ package com.clientchat.services;
 import java.io.IOException;
 import java.net.Socket;
 import com.clientchat.auth.AuthManager;
+import com.clientchat.protocol.CommandType;
 
 public class ProfileService extends Service {
     // attributes
@@ -56,19 +57,19 @@ public class ProfileService extends Service {
     }
 
     private void handleLogout() throws IOException {
-        // super.sendReq(CommandType.LOGOUT.toString());
-        // CommandType res = super.catchCommandRes();
+        super.sendReq(CommandType.LOGOUT.toString());
+        CommandType res = super.catchCommandRes();
 
-        // if (super.isSuccess(res)) {
-        //     // set choice to "0" to leave this loop, without exiting the app
-        //     // this send the user to the auth menu
-        //     choice = "0";
-        // } else {
-        //     System.out.println(res.getDescription());
-        // }
+        if (super.isSuccess(res)) {
+            // set choice to "0" to leave this loop, without exiting the app
+            // this send the user to the auth menu
+            AuthManager.getInstance().logout();
+            choice = "0";
+        } else {
+            System.out.println(res.getDescription());
+        }
 
-        AuthManager.getInstance().logout();
-        choice = "0";
+        super.cleanBuffer();
     }
 
     private void handleBack() throws IOException {

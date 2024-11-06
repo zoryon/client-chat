@@ -55,7 +55,7 @@ public class AuthService extends Service {
     // private methods --> can only be seen inside this class
     private void handleAuthenticationMenu() throws IOException {
         printAuthMenu();
-        String choice = super.keyboard.nextLine();
+        String choice = super.keyboard.nextLine().trim();
 
         switch (choice) {
             case "1":
@@ -77,13 +77,15 @@ public class AuthService extends Service {
         sendAuthReq(CommandType.NEW_USER, user);
         CommandType res = super.catchCommandRes();
 
-        if (isSuccess(res)) {
+        if (super.isSuccess(res)) {
             System.out.println(newLine() + "Successfully registered!");
             System.out.println("You'll automatically be signed in");
             authManager.authenticate(user.getUsername());
         } else {
             System.out.println("Error: " + res.getDescription());
         }
+
+        super.cleanBuffer();
     }
 
     private void handleSignIn() throws IOException {
@@ -91,12 +93,14 @@ public class AuthService extends Service {
         sendAuthReq(CommandType.OLD_USER, user);
         CommandType res = super.catchCommandRes();
 
-        if (isSuccess(res)) {
+        if (super.isSuccess(res)) {
             System.out.println("Successfully signed in!");
             authManager.authenticate(user.getUsername());
         } else {
             System.out.println("Error: " + res.getDescription());
         }
+
+        super.cleanBuffer();
     }
 
     private JsonUser getCredentialsFromUser() {
