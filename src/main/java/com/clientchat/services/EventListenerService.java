@@ -5,6 +5,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import com.clientchat.protocol.CommandType;
 import com.clientchat.protocol.JsonChat;
+import com.clientchat.protocol.JsonMessage;
 import com.google.gson.reflect.TypeToken;
 
 public class EventListenerService extends Service implements Runnable {
@@ -36,10 +37,24 @@ public class EventListenerService extends Service implements Runnable {
             while (Service.isRunning) {
                 CommandType command = super.catchCommandRes();
                 switch (command) {
+                    case SEND_MSG: 
+                        JsonMessage msg = catchJsonReq(JsonMessage.class);
+
+                        // loop through the chatList
+                        chatList.forEach(chat -> {
+                            // stop when the match is found
+                            if (chat.getId() == msg.getChatId())
+                                chat.addMessage(msg);
+                        });
+                        break;
                     default:
+                        super.sendReq(CommandType.ERR_WRONG_DATA.toString());
                 }
+
+                // add a delay of 500 milliseconds
+                Thread.sleep(500);
             }
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -57,11 +72,7 @@ public class EventListenerService extends Service implements Runnable {
 
     // private methods --> can only be seen inside this class
     private void catchInitialChats() throws IOException {
-        String jsonChatList = super.catchRes();
-
-        chatList = super.gson.fromJson(
-            jsonChatList, 
-            new TypeToken<ArrayList<JsonChat>>() {}.getType()
-        );
+        chatList = catchJsonReq(new TypeToken<ArrayList<JsonChat>>() {}.getType());
+        System.out.println(chatList);
     }
 }

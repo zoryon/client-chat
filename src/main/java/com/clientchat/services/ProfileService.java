@@ -23,6 +23,7 @@ public class ProfileService extends Service {
             new MenuBuilder()
                 .addOption("1", "Change username", ActionUtils.wrapAction(this::handleChangeUsername))
                 .addOption("2", "Logout", ActionUtils.wrapAction(this::handleLogout))
+                .addOption("4", "Delete", ActionUtils.wrapAction(this::handleDeleteUser))
                 .addOption("3", "Back", ActionUtils.wrapAction(this::handleBack))
                 .addOption("0", "Exit", ActionUtils.wrapAction(super::handleExit))
                 .build()
@@ -43,8 +44,7 @@ public class ProfileService extends Service {
      */
     public boolean run() throws IOException {
         do {
-            MenuOption.printMenu("- - - " + AuthManager.getInstance().getUsername() + "'s" + " PROFILE - - -",
-                    super.menuOptions);
+            MenuOption.printMenu("- - - " + AuthManager.getInstance().getUsername() + "'s" + " PROFILE - - -", super.menuOptions);
 
             // get the choice from the user
             choice = super.keyboard.nextLine().trim();
@@ -101,5 +101,26 @@ public class ProfileService extends Service {
          * this send the user to the service menu
          */
         choice = "0";
+    }
+
+    private void handleDeleteUser() throws IOException {
+        // get password from user
+        String password = super.keyboard.nextLine().trim();
+
+        // send delete user request
+        super.sendReq(CommandType.DEL_USER.toString());
+
+        // send json password
+        super.sendJsonReq(password);
+
+        // get response
+        CommandType res = catchCommandRes();
+
+        if (super.isSuccess(res)) {
+            AuthManager.getInstance().logout();
+            choice = "0";
+        } else {
+            System.out.println("Error: " + res.getDescription());
+        }
     }
 }

@@ -36,7 +36,7 @@ public class JsonChat {
         return messages;
     }
 
-    public void setMessages(ArrayList<JsonMessage> messages) {
-        this.messages = messages;
-    } 
+    public boolean addMessage(JsonMessage msg) {
+        return messages.add(msg);
+    }
 }

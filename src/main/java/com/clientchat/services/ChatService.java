@@ -13,6 +13,7 @@ public class ChatService extends Service {
     private static ChatService instance;
     private final EventListenerService eventListener;
     private String choice;
+    private CommandType res;
 
     // constructors
     private ChatService(Socket socket) throws IOException {
@@ -53,8 +54,7 @@ public class ChatService extends Service {
             choice = super.keyboard.nextLine().trim();
 
             // get the action to perform based on the user's choice
-            MenuOption selectedOption = super.menuOptions.getOrDefault(choice,
-                    new MenuOption("Unknown option", super::handleUnknownOption));
+            MenuOption selectedOption = super.menuOptions.getOrDefault(choice, new MenuOption("Unknown option", super::handleUnknownOption));
 
             // run the passed fn related to the user's choice
             selectedOption.getAction().run();
@@ -79,7 +79,8 @@ public class ChatService extends Service {
         System.out.print("Insert chat identifier (chatName#chatId): ");
         String chatToSend = super.keyboard.nextLine().trim();
 
-        // TODO: still need to finish here
+        // TODO: ADD ADMIN RELATED COMMANDS
+        // TODO: add /help to view all the special commands
         String tmp;
         do {
             /*
@@ -88,31 +89,46 @@ public class ChatService extends Service {
              * and, as such, should not be sent as text messages to the server
              */
             tmp = super.keyboard.nextLine();
-            switch (tmp) {
-                case "/back":
-                    break;
-                default:
-                    super.sendReq(CommandType.SEND_MSG.toString());
 
-                    /*
-                     * Integer.parseInt(chatToSend.split("#")[1] -->
-                     * chatToSend should have this format: chatName#chatId,
-                     * with the split fn we are diving chatName from chatId into an array.
-                     * with [1] we are getting the second element (chatId).
-                     * after we have the chatId we transform it into an Integer.
-                     */
-                    super.sendJsonReq(new JsonMessage(Integer.parseInt(chatToSend.split("#")[1]), tmp));
-                    CommandType ok = catchCommandRes();
+            if (tmp.equals("/back")) break;
 
-                    if (super.isSuccess(ok)) {
-                        System.out.print("- Successfully sent");
-                    } else {
-                        System.out.print("- Error: " + ok.getDescription());
-                    }
+            if (tmp.startsWith("/remove")) {
+                /*  
+                 * tmp.split(" #")[1] --> get message id from the user 
+                 * which is after the " #" 
+                 */
+                String msgId = tmp.split(" #")[1];
 
-                    // as server sends NULL here, we clear the input stream
-                    super.cleanBuffer();
+                super.sendReq(CommandType.RM_MSG.toString());
+                super.sendJsonReq(msgId);
+                res = catchCommandRes();
+
+                // as server sends NULL here, we clear the input stream
+                super.cleanBuffer();
+                break;
             }
+
+            // send text message
+            super.sendReq(CommandType.SEND_MSG.toString());
+
+            /*
+             * Integer.parseInt(chatToSend.split("#")[1] -->
+             * chatToSend should have this format: chatName#chatId,
+             * with the split fn we are diving chatName from chatId into an array.
+             * with [1] we are getting the second element (chatId).
+             * after we have the chatId we transform it into an Integer.
+             */
+            super.sendJsonReq(new JsonMessage(Integer.parseInt(chatToSend.split("#")[1]), tmp));
+            res = catchCommandRes();
+
+            if (super.isSuccess(res)) {
+                System.out.print("- *");
+            } else {
+                System.out.println("- Error " + res.getDescription());
+            }
+
+            // as server sends NULL here, we clear the input stream
+            super.cleanBuffer();
         } while (!tmp.equals("/back"));
     }
 }
