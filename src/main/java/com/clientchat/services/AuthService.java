@@ -117,10 +117,10 @@ public class AuthService extends Service {
     }
 
     private JsonUser getCredentialsFromUser() {
-        System.out.print("\nInsert username: ");
+        System.out.print("\nEnter username: ");
         String username = super.keyboard.nextLine().trim();
 
-        System.out.print("Insert password: ");
+        System.out.print("Enter password: ");
         String password = super.keyboard.nextLine().trim();
 
         return new JsonUser(username, password);

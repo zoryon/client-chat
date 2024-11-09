@@ -76,7 +76,7 @@ public class ChatService extends Service {
 
     private void handleConnectToChat() throws IOException {
         // get chat identifier from user
-        System.out.print("Insert chat identifier (chatName#chatId): ");
+        System.out.print("Enter chat identifier (chatName#chatId): ");
         String chatToSend = super.keyboard.nextLine().trim();
 
         // TODO: ADD ADMIN RELATED COMMANDS
@@ -90,8 +90,10 @@ public class ChatService extends Service {
              */
             tmp = super.keyboard.nextLine();
 
+            // case "/back"
             if (tmp.equals("/back")) break;
 
+            // case: "/remove #messageId"
             if (tmp.startsWith("/remove")) {
                 /*  
                  * tmp.split(" #")[1] --> get message id from the user 
@@ -108,7 +110,7 @@ public class ChatService extends Service {
                 break;
             }
 
-            // send text message
+            // case: send text message
             super.sendReq(CommandType.SEND_MSG.toString());
 
             /*

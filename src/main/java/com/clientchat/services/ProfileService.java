@@ -20,14 +20,13 @@ public class ProfileService extends Service {
 
         // initialize menu
         super.initializeMenuOptions(
-            new MenuBuilder()
-                .addOption("1", "Change username", ActionUtils.wrapAction(this::handleChangeUsername))
-                .addOption("2", "Logout", ActionUtils.wrapAction(this::handleLogout))
-                .addOption("4", "Delete", ActionUtils.wrapAction(this::handleDeleteUser))
-                .addOption("3", "Back", ActionUtils.wrapAction(this::handleBack))
-                .addOption("0", "Exit", ActionUtils.wrapAction(super::handleExit))
-                .build()
-        );
+                new MenuBuilder()
+                        .addOption("1", "Change username", ActionUtils.wrapAction(this::handleChangeUsername))
+                        .addOption("2", "Logout", ActionUtils.wrapAction(this::handleLogout))
+                        .addOption("4", "Delete", ActionUtils.wrapAction(this::handleDeleteUser))
+                        .addOption("3", "Back", ActionUtils.wrapAction(this::handleBack))
+                        .addOption("0", "Exit", ActionUtils.wrapAction(super::handleExit))
+                        .build());
     }
 
     // ISTANCE --> only one instance can exists at a time
@@ -44,13 +43,15 @@ public class ProfileService extends Service {
      */
     public boolean run() throws IOException {
         do {
-            MenuOption.printMenu("- - - " + AuthManager.getInstance().getUsername() + "'s" + " PROFILE - - -", super.menuOptions);
+            MenuOption.printMenu("- - - " + AuthManager.getInstance().getUsername() + "'s" + " PROFILE - - -",
+                    super.menuOptions);
 
             // get the choice from the user
             choice = super.keyboard.nextLine().trim();
 
             // get the action to perform based on the user's choice
-            MenuOption selectedOption = super.menuOptions.getOrDefault(choice, new MenuOption("Unknown option", super::handleUnknownOption));
+            MenuOption selectedOption = super.menuOptions.getOrDefault(choice,
+                    new MenuOption("Unknown option", super::handleUnknownOption));
 
             // run the passed fn related to the user's choice
             selectedOption.getAction().run();
@@ -61,16 +62,15 @@ public class ProfileService extends Service {
 
     // private methods --> can only be seen inside this class
     private void handleChangeUsername() throws IOException {
-        super.sendReq(CommandType.UPD_NAME.toString());
-
         // get new username from string and send it to the server
         String newUsername = super.keyboard.nextLine().trim();
-        super.sendJsonReq(newUsername);
 
-        res = super.catchCommandRes();
+        res = reqWithSecurityConfirmation(CommandType.UPD_NAME, newUsername);
 
         if (super.isSuccess(res)) {
             System.out.println("Successfully changed username to: " + newUsername);
+        } else {
+            System.out.println(res.getDescription());
         }
 
         // as server sends NULL here, we clear the input stream
@@ -104,23 +104,54 @@ public class ProfileService extends Service {
     }
 
     private void handleDeleteUser() throws IOException {
-        // get password from user
-        String password = super.keyboard.nextLine().trim();
-
-        // send delete user request
-        super.sendReq(CommandType.DEL_USER.toString());
-
-        // send json password
-        super.sendJsonReq(password);
-
-        // get response
-        CommandType res = catchCommandRes();
-
+        res = reqWithSecurityConfirmation(CommandType.DEL_USER, null);
         if (super.isSuccess(res)) {
             AuthManager.getInstance().logout();
             choice = "0";
         } else {
             System.out.println("Error: " + res.getDescription());
         }
+
+        super.cleanBuffer();
+    }
+
+    /*
+     * The goal of this fn is to make sure the user who want
+     * to make the action is the owner of the account.
+     * "<T>" is a generic type of "toSend".
+     * It's something like "Object".
+     * This way "RequestData" object will have
+     * the attribute "data" of the correct type
+     */
+    private <T> CommandType reqWithSecurityConfirmation(CommandType command, T toSend) throws IOException {
+        // send delete user request
+        super.sendReq(command.toString());
+
+        // BEFORE CONTINUING, SAFETY MEASURES MUST BE TAKEN
+        // get password from user
+        System.out.print("Enter your password: ");
+        String password = super.keyboard.nextLine().trim();
+
+        /*
+         * create a class for password and data only.
+         * "<U>" share the same concept as "<T>"
+         */
+        class RequestData<U> {
+            @SuppressWarnings("unused")
+            private String password;
+            @SuppressWarnings("unused")
+            private U data;
+
+            public RequestData(String password, U data) {
+                this.password = password;
+                this.data = data;
+            }
+        }
+
+        // send json password
+        super.sendJsonReq(new RequestData<>(password, toSend));
+
+        // get and the return the response
+        return catchCommandRes();
     }
 }
