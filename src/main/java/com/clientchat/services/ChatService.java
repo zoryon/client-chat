@@ -26,10 +26,10 @@ public class ChatService extends Service {
         // initialize menu
         super.initializeMenuOptions(
             new MenuBuilder()
+                .addOption("0", "Exit", ActionUtils.wrapAction(super::handleExit))
                 .addOption("1", "View your chats", this::handleViewUserChats)
                 .addOption("2", "Connect to a chat", ActionUtils.wrapAction(this::handleConnectToChat))
                 .addOption("3", "See own profile", ActionUtils.wrapAction(this::handleViewProfile))
-                .addOption("0", "Exit", ActionUtils.wrapAction(super::handleExit))
                 .build()
         );
     }

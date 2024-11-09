@@ -22,9 +22,9 @@ public class AuthService extends Service {
         // initialize menu
         super.initializeMenuOptions(
             new MenuBuilder()
+            .addOption("0", "Exit", ActionUtils.wrapAction(super::handleExit))
             .addOption("1", "Sign up", ActionUtils.wrapAction(this::handleSignUp))
             .addOption("2", "Sign in", ActionUtils.wrapAction(this::handleSignIn))
-            .addOption("0", "Exit", ActionUtils.wrapAction(super::handleExit))
             .build()
         );
     }

@@ -20,13 +20,14 @@ public class ProfileService extends Service {
 
         // initialize menu
         super.initializeMenuOptions(
-                new MenuBuilder()
-                        .addOption("1", "Change username", ActionUtils.wrapAction(this::handleChangeUsername))
-                        .addOption("2", "Logout", ActionUtils.wrapAction(this::handleLogout))
-                        .addOption("4", "Delete", ActionUtils.wrapAction(this::handleDeleteUser))
-                        .addOption("3", "Back", ActionUtils.wrapAction(this::handleBack))
-                        .addOption("0", "Exit", ActionUtils.wrapAction(super::handleExit))
-                        .build());
+            new MenuBuilder()
+                .addOption("0", "Exit", ActionUtils.wrapAction(super::handleExit))
+                .addOption("1", "Back", ActionUtils.wrapAction(this::handleBack))
+                .addOption("2", "Change username", ActionUtils.wrapAction(this::handleChangeUsername))
+                .addOption("3", "Logout", ActionUtils.wrapAction(this::handleLogout))
+                .addOption("4", "Delete", ActionUtils.wrapAction(this::handleDeleteUser))
+                .build()
+        );
     }
 
     // ISTANCE --> only one instance can exists at a time
@@ -43,15 +44,13 @@ public class ProfileService extends Service {
      */
     public boolean run() throws IOException {
         do {
-            MenuOption.printMenu("- - - " + AuthManager.getInstance().getUsername() + "'s" + " PROFILE - - -",
-                    super.menuOptions);
+            MenuOption.printMenu("- - - " + AuthManager.getInstance().getUsername() + "'s" + " PROFILE - - -", super.menuOptions);
 
             // get the choice from the user
             choice = super.keyboard.nextLine().trim();
 
             // get the action to perform based on the user's choice
-            MenuOption selectedOption = super.menuOptions.getOrDefault(choice,
-                    new MenuOption("Unknown option", super::handleUnknownOption));
+            MenuOption selectedOption = super.menuOptions.getOrDefault(choice, new MenuOption("Unknown option", super::handleUnknownOption));
 
             // run the passed fn related to the user's choice
             selectedOption.getAction().run();
@@ -63,6 +62,7 @@ public class ProfileService extends Service {
     // private methods --> can only be seen inside this class
     private void handleChangeUsername() throws IOException {
         // get new username from string and send it to the server
+        System.out.println("Enter the new username");
         String newUsername = super.keyboard.nextLine().trim();
 
         res = reqWithSecurityConfirmation(CommandType.UPD_NAME, newUsername);
@@ -129,9 +129,11 @@ public class ProfileService extends Service {
 
         // BEFORE CONTINUING, SAFETY MEASURES MUST BE TAKEN
         // get password from user
-        System.out.print("Enter your password: ");
+        System.out.print("To confirm this action, enter your password: ");
         String password = super.keyboard.nextLine().trim();
 
+
+        // TODO: there's an error after entering the password
         /*
          * create a class for password and data only.
          * "<U>" share the same concept as "<T>"
