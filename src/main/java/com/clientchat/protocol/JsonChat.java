@@ -33,7 +33,7 @@ public class JsonChat {
     }
 
     public ArrayList<JsonMessage> getMessages() {
-        return messages;
+        return new ArrayList<>(messages);
     }
 
     public boolean addMessage(JsonMessage msg) {

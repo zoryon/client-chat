@@ -70,6 +70,24 @@ public class EventListenerService extends Service implements Runnable {
         }
     }
 
+    public ArrayList<JsonMessage> getChatMessages(int chatId) {
+        for (JsonChat chat : chatList) {
+            if (chat.getId() == chatId) {
+                return chat.getMessages();
+            }
+        }
+    
+        return new ArrayList<>();
+    }
+
+    public void printChatMessages(int chatId) {
+        ArrayList<JsonMessage> messages = getChatMessages(chatId);
+
+        messages.forEach(message -> {
+            System.out.println(message.getSenderName() + "#" + message.getId() + ": " + message.getContent());
+        });
+    }
+
     // private methods --> can only be seen inside this class
     private void catchInitialChats() throws IOException {
         chatList = catchJsonReq(new TypeToken<ArrayList<JsonChat>>() {}.getType());

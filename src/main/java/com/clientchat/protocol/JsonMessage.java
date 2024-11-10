@@ -2,9 +2,7 @@ package com.clientchat.protocol;
 
 public class JsonMessage {
     // attributes
-    @SuppressWarnings("unused")
     private int id;
-    
     private int chatId;
     private int senderId;
     private String senderName;
@@ -22,6 +20,14 @@ public class JsonMessage {
     }
 
     // getters and setters
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public int getChatId() {
         return chatId;
     }
