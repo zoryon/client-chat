@@ -103,6 +103,8 @@ public class ChatService extends Service {
 
             // TODO: ADD ADMIN RELATED COMMANDS
             // TODO: add /help to view all the special commands
+
+            // IMPORTANT TODO: run a thread which show the up-to-date messages inside the chat
             String tmp;
             do {
                 /*
