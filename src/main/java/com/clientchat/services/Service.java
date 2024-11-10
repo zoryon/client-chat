@@ -67,9 +67,9 @@ public class Service {
         }
     }
 
-    protected void sendReq(String req) throws IOException {
+    protected void sendReq(CommandType req) throws IOException {
         // send the String request in the socket output stream
-        out.writeBytes(req + newLine());
+        out.writeBytes(req.toString() + newLine());
     }
 
     protected void sendJsonReq(Object req) throws IOException {
@@ -77,12 +77,24 @@ public class Service {
         out.writeBytes(gson.toJson(req) + newLine());
     }
 
+    protected void sendRes(CommandType res) throws IOException {
+        // same concept as sendReq, but different naming to be more precise
+        // send the String response in the socket output stream
+        sendReq(res);
+    }
+
+    protected void sendJsonRes(Object res) throws IOException {
+        // same concept as sendJsonReq, but different naming to be more precise
+        // send the Object to socket output stream in JSON FORMAT
+        sendJsonReq(res);
+    }
+
     protected boolean isSuccess(CommandType res) {
         return res == CommandType.OK;
     }
 
     protected void handleExit() throws IOException {
-        sendReq(CommandType.EXIT.toString());
+        sendReq(CommandType.EXIT);
         Service.isRunning = false;
         System.out.println("Thank you for having trusted us!");
     }

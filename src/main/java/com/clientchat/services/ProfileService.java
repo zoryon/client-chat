@@ -78,7 +78,7 @@ public class ProfileService extends Service {
     }
 
     private void handleLogout() throws IOException {
-        super.sendReq(CommandType.LOGOUT.toString());
+        super.sendReq(CommandType.LOGOUT);
         res = super.catchCommandRes();
 
         if (super.isSuccess(res)) {
@@ -125,7 +125,7 @@ public class ProfileService extends Service {
      */
     private <T> CommandType reqWithSecurityConfirmation(CommandType command, T toSend) throws IOException {
         // send delete user request
-        super.sendReq(command.toString());
+        super.sendReq(command);
 
         // BEFORE CONTINUING, SAFETY MEASURES MUST BE TAKEN
         // get password from user

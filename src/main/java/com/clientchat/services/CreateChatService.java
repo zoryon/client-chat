@@ -63,7 +63,7 @@ public class CreateChatService extends Service {
         String username = super.keyboard.nextLine().trim();
 
         // processing request
-        sendReq(CommandType.NEW_CHAT.toString());
+        sendReq(CommandType.NEW_CHAT);
         sendJsonReq(username);
         res = catchCommandRes();
 
@@ -82,7 +82,7 @@ public class CreateChatService extends Service {
         System.out.print("Enter the group name: ");
         String groupName = super.keyboard.nextLine().trim();
         
-        sendReq(CommandType.NEW_GROUP.toString());
+        sendReq(CommandType.NEW_GROUP);
 
         // TODO: add participants here and send them togheter with groupName
         // add a do while that loops till the user has finished

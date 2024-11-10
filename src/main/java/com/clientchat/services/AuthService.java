@@ -128,7 +128,7 @@ public class AuthService extends Service {
 
     private void sendAuthReq(CommandType command, JsonUser user) throws IOException {
         // send the command to let the server know what to expect
-        super.sendReq(command.toString());
+        super.sendReq(command);
 
         // send the user in json format
         sendJsonReq(user);

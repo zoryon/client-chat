@@ -40,16 +40,25 @@ public class EventListenerService extends Service implements Runnable {
                     case SEND_MSG: 
                         JsonMessage msg = catchJsonReq(JsonMessage.class);
 
-                        // loop through the chatList
-                        chatList.forEach(chat -> {
-                            // stop when the match is found
-                            if (chat.getId() == msg.getChatId())
-                                chat.addMessage(msg);
-                        });
+                        if (msg != null) {
+                            // loop through the chatList
+                            chatList.forEach(chat -> {
+                                // stop when the match is found
+                                if (chat.getId() == msg.getChatId())
+                                    chat.addMessage(msg);
+                            });
+                        } else {
+                            sendRes(CommandType.ERR_GEN);
+                        }
                         break;
                     default:
-                        super.sendReq(CommandType.ERR_WRONG_DATA.toString());
+                        super.sendRes(CommandType.ERR_WRONG_DATA);
+                        continue;
                 }
+
+                // default OK response
+                super.sendRes(CommandType.OK);
+                super.sendJsonRes(null);
 
                 // add a delay of 500 milliseconds
                 Thread.sleep(500);

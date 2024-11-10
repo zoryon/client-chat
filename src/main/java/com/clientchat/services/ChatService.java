@@ -94,7 +94,7 @@ public class ChatService extends Service {
         }
 
         // making sure the user has rights to access the chat
-        sendReq(CommandType.NAV_CHAT.toString());
+        sendReq(CommandType.NAV_CHAT);
         sendJsonReq(chatToSend);
         res = catchCommandRes();
 
@@ -126,7 +126,7 @@ public class ChatService extends Service {
                      */
                     String msgId = tmp.split(" #")[1];
 
-                    super.sendReq(CommandType.RM_MSG.toString());
+                    super.sendReq(CommandType.RM_MSG);
                     super.sendJsonReq(msgId);
                     res = catchCommandRes();
 
@@ -138,7 +138,7 @@ public class ChatService extends Service {
                 }
 
                 // case: send text message
-                super.sendReq(CommandType.SEND_MSG.toString());
+                super.sendReq(CommandType.SEND_MSG);
 
                 /*
                  * Integer.parseInt(chatToSend.split("#")[1] -->
