@@ -30,7 +30,7 @@ public class ChatService extends Service {
                 .addOption("1", "View your chats", this::handleViewUserChats)
                 .addOption("2", "Create a chat", ActionUtils.wrapAction(this::handleCreateChat))
                 .addOption("3", "Connect to a chat", ActionUtils.wrapAction(this::handleConnectToChat))
-                .addOption("4", "See own profile", ActionUtils.wrapAction(this::handleViewProfile))
+                .addOption("4", "Manage profile", ActionUtils.wrapAction(this::handleViewProfile))
                 .build()
         );
     }
@@ -77,21 +77,7 @@ public class ChatService extends Service {
     }
 
     private void handleCreateChat() throws IOException {
-        // get the username with whom the user wants to create a new chat
-        System.out.print("Enter the username with whom you want to start a chat: ");
-        String username = super.keyboard.nextLine().trim();
-
-        // processing request
-        sendReq(CommandType.NEW_CHAT.toString());
-        sendJsonReq(username);
-        res = catchCommandRes();
-
-        if (super.isSuccess(res)) {
-            // get the identifier (chatName#chatId) and automatically connect
-            handleConnectToChat(catchJsonReq(String.class));
-        } else {
-            System.out.println("Error: " + res.getDescription());
-        }
+        CreateChatService.getInstance(socket).run();
     }
 
     private void handleConnectToChat() throws IOException {
@@ -99,7 +85,8 @@ public class ChatService extends Service {
         handleConnectToChat(null);
     }
 
-    private void handleConnectToChat(String chatToSend) throws IOException {
+    // protected methods --> can only be seen inside this package
+    protected void handleConnectToChat(String chatToSend) throws IOException {
         if (chatToSend == null) {
             // get chat identifier from user
             System.out.print("Enter chat identifier (chatName#chatId): ");
@@ -140,6 +127,8 @@ public class ChatService extends Service {
                     super.sendReq(CommandType.RM_MSG.toString());
                     super.sendJsonReq(msgId);
                     res = catchCommandRes();
+
+                    if (!super.isSuccess(res)) System.out.println("Error: "  + res.getDescription());
 
                     // as server sends NULL here, we clear the input stream
                     super.cleanBuffer();
