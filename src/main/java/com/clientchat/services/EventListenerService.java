@@ -42,11 +42,13 @@ public class EventListenerService extends Service implements Runnable {
 
                         if (msg != null) {
                             // loop through the chatList
-                            chatList.forEach(chat -> {
+                            for (JsonChat chat : chatList) {
                                 // stop when the match is found
-                                if (chat.getId() == msg.getChatId())
+                                if (chat.getId() == msg.getChatId()) {
                                     chat.addMessage(msg);
-                            });
+                                    break;  
+                                }
+                            }
                         } else {
                             sendRes(CommandType.ERR_GEN);
                         }
