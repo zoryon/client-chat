@@ -25,7 +25,7 @@ public enum CommandType {
     ADD_ADMIN("Add a new admin to a group"),
     RM_ADMIN("Remove admin privileges from a user"),
     UPD_GROUP_NAME("Change the name of a group"),
-    CREATE_GROUP("Create a new group"),
+    NEW_GROUP("Create a new group"),
     REQ_GROUP_USER("View users in a specific group"),
 
     // error messages
