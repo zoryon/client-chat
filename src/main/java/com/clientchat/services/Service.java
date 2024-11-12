@@ -23,6 +23,8 @@ public class Service {
     protected final Gson gson;
     protected static boolean isRunning = true;
 
+    protected EventListenerService eventListener;
+
     /*
      * Basically an ArrayList,
      * BUT, instead of an index, MAP
@@ -41,6 +43,8 @@ public class Service {
 
         this.tmp = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         this.in = new SynchronizedBufferedReader(tmp);
+
+        this.eventListener = EventListenerService.getInstance(in);
     }
 
     // protected methods --> can only be seen inside services package
@@ -48,20 +52,20 @@ public class Service {
         return System.lineSeparator(); // lineSeparator --> "\n"
     }
 
-    protected String catchRes() throws IOException {
-        return in.readLine(); // wait for a socket stream input
+    protected synchronized String catchRes() throws InterruptedException {
+        return eventListener.getDataQueue().take(); // wait for a socket stream input
     }
 
-    protected CommandType catchCommandRes() throws IOException {
+    protected synchronized CommandType catchCommandRes() throws InterruptedException {
         // return the CommandType which value correspond to the catched string
-        return CommandType.valueOf(catchRes());
+        return eventListener.getCommandQueue().take(); // wait for a socket stream input
     }
 
     protected <T> T catchJsonReq(Type type) {
         try {
             String json = catchRes();
             return gson.fromJson(json, type);
-        } catch (IOException e) {
+        } catch (InterruptedException e) {
             System.out.println(e.getMessage());
             return null;
         }
@@ -93,15 +97,11 @@ public class Service {
         return res == CommandType.OK;
     }
 
-    protected void handleExit() throws IOException {
+    protected void handleExit() throws IOException, InterruptedException {
         sendReq(CommandType.EXIT);
+        stopService();
         Service.isRunning = false;
         System.out.println("Thank you for having trusted us!");
-    }
-
-    protected void cleanBuffer() throws IOException {
-        // clearing buffered reader from useless NULL data
-        in.readLine();
     }
 
     protected void initializeMenuOptions(Map<String, MenuOption> menuOptions) {
@@ -111,5 +111,10 @@ public class Service {
 
     protected void handleUnknownOption() {
         System.out.println("Unknown option. Please try again.");
+    }
+
+    public void stopService() throws InterruptedException {
+        eventListener.stopListener();
+        eventListener.join();
     }
 }

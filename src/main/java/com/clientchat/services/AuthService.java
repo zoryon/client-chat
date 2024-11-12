@@ -19,6 +19,9 @@ public class AuthService extends Service {
         super(socket);
         this.authManager = AuthManager.getInstance(); // equal to "new AuthManager()"
 
+        // start thread
+        super.eventListener.start();
+
         // initialize menu
         super.initializeMenuOptions(
             new MenuBuilder()
@@ -83,7 +86,7 @@ public class AuthService extends Service {
         selectedOption.getAction().run();
     }
 
-    private void handleSignUp() throws IOException {
+    private void handleSignUp() throws IOException, InterruptedException {
         JsonUser user = getCredentialsFromUser();
         sendAuthReq(CommandType.NEW_USER, user);
         CommandType res = super.catchCommandRes();
@@ -95,12 +98,9 @@ public class AuthService extends Service {
         } else {
             System.out.println("Error: " + res.getDescription());
         }
-
-        // as server sends NULL here, we clear the input stream 
-        super.cleanBuffer();
     }
 
-    private void handleSignIn() throws IOException {
+    private void handleSignIn() throws IOException, InterruptedException {
         JsonUser user = getCredentialsFromUser();
         sendAuthReq(CommandType.OLD_USER, user);
         CommandType res = super.catchCommandRes();
@@ -111,9 +111,6 @@ public class AuthService extends Service {
         } else {
             System.out.println("Error: " + res.getDescription());
         }
-
-        // as server sends NULL here, we clear the input stream 
-        super.cleanBuffer();
     }
 
     private JsonUser getCredentialsFromUser() {

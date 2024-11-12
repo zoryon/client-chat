@@ -60,7 +60,7 @@ public class ProfileService extends Service {
     }
 
     // private methods --> can only be seen inside this class
-    private void handleChangeUsername() throws IOException {
+    private void handleChangeUsername() throws IOException, InterruptedException {
         // get new username from string and send it to the server
         System.out.println("Enter the new username");
         String newUsername = super.keyboard.nextLine().trim();
@@ -72,12 +72,9 @@ public class ProfileService extends Service {
         } else {
             System.out.println(res.getDescription());
         }
-
-        // as server sends NULL here, we clear the input stream
-        super.cleanBuffer();
     }
 
-    private void handleLogout() throws IOException {
+    private void handleLogout() throws IOException, InterruptedException {
         super.sendReq(CommandType.LOGOUT);
         res = super.catchCommandRes();
 
@@ -91,8 +88,6 @@ public class ProfileService extends Service {
         } else {
             System.out.println(res.getDescription());
         }
-
-        super.cleanBuffer();
     }
 
     private void handleBack() throws IOException {
@@ -103,7 +98,7 @@ public class ProfileService extends Service {
         choice = "0";
     }
 
-    private void handleDeleteUser() throws IOException {
+    private void handleDeleteUser() throws IOException, InterruptedException {
         res = reqWithSecurityConfirmation(CommandType.DEL_USER, null);
         if (super.isSuccess(res)) {
             AuthManager.getInstance().logout();
@@ -111,8 +106,6 @@ public class ProfileService extends Service {
         } else {
             System.out.println("Error: " + res.getDescription());
         }
-
-        super.cleanBuffer();
     }
 
     /*
@@ -123,7 +116,7 @@ public class ProfileService extends Service {
      * This way "RequestData" object will have
      * the attribute "data" of the correct type
      */
-    private <T> CommandType reqWithSecurityConfirmation(CommandType command, T toSend) throws IOException {
+    private <T> CommandType reqWithSecurityConfirmation(CommandType command, T toSend) throws IOException, InterruptedException {
         // send delete user request
         super.sendReq(command);
 

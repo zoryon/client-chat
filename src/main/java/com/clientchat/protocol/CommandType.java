@@ -14,6 +14,7 @@ public enum CommandType {
     REQ_LOGGED_USER("View information regarding the logged in user"),
     REQ_ALL_USERS("View all users in the system"),
     REQ_ALL_GROUPS("View all groups in the system"),
+    INIT("Send initial user's chat array"),
     LOGOUT("Logout from the current account"),
     OK("The previous command was executed successfully"),
     EXIT("Exit from the app and close the connection"),

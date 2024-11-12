@@ -3,13 +3,11 @@ package com.clientchat.services;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
-
 import com.clientchat.lib.ActionUtils;
 import com.clientchat.lib.MenuBuilder;
 import com.clientchat.lib.MenuOption;
 import com.clientchat.protocol.CommandType;
 import com.clientchat.protocol.JsonGroup;
-import com.clientchat.protocol.JsonUser;
 
 public class CreateChatService extends Service {
     // attributes
@@ -61,7 +59,7 @@ public class CreateChatService extends Service {
     }
 
     // private methods --> can only be seen inside this class
-    private void createPrivateDirectChat() throws IOException {
+    private void createPrivateDirectChat() throws IOException, InterruptedException {
         // get the username with whom the user wants to create a new chat
         System.out.print("Enter the username with whom you want to start a chat: ");
         String username = super.keyboard.nextLine().trim();
@@ -69,7 +67,9 @@ public class CreateChatService extends Service {
         // processing request
         sendReq(CommandType.NEW_CHAT);
         sendJsonReq(username);
-        res = catchCommandRes();
+
+        eventListener.printCommandAndData();
+        res = super.catchCommandRes();
 
         if (super.isSuccess(res)) {
             System.out.println("Private direct chat created successfully.");
@@ -82,7 +82,7 @@ public class CreateChatService extends Service {
         }
     }
 
-    private void createPrivateGroupChat() throws IOException {
+    private void createPrivateGroupChat() throws IOException, InterruptedException {
         System.out.print("Enter the group name: ");
         String groupName = super.keyboard.nextLine().trim();
         
@@ -99,7 +99,7 @@ public class CreateChatService extends Service {
 
         sendJsonReq(new JsonGroup(groupName, usernameList));
 
-        CommandType res = catchCommandRes();
+        CommandType res = super.catchCommandRes();
         
         if (super.isSuccess(res)) {
             System.out.println("Private group chat created successfully.");

@@ -11,7 +11,6 @@ public class ChatMessagesDisplayService extends Thread {
 
     // constructors
     public ChatMessagesDisplayService(Socket socket, int chatId) throws IOException {
-        prevMessages = EventListenerService.getInstance(socket).getChatMessages(chatId);
     }
 
     // main body --> runned fn when thread starts

@@ -11,17 +11,12 @@ import com.clientchat.protocol.JsonMessage;
 public class ChatService extends Service {
     // attributes
     private static ChatService instance;
-    private final EventListenerService eventListener;
     private String choice;
     private CommandType res;
 
     // constructors
     private ChatService(Socket socket) throws IOException {
         super(socket);
-        this.eventListener = EventListenerService.getInstance(socket); // equal to "new EventListenerService(socket)"
-
-        // start the listener service to get up-to-date data
-        new Thread(eventListener).start();
 
         // initialize menu
         super.initializeMenuOptions(
@@ -66,7 +61,6 @@ public class ChatService extends Service {
     // private methods --> can only be seen inside this class
     private void handleViewUserChats() {
         System.out.println("Your chats:");
-        eventListener.printAllChats();
     }
 
     private void handleViewProfile() throws IOException {
@@ -80,13 +74,13 @@ public class ChatService extends Service {
         CreateChatService.getInstance(socket).run();
     }
 
-    private void handleConnectToChat() throws IOException {
+    private void handleConnectToChat() throws IOException, InterruptedException {
         // can call this version of the fn, if there's no chat identifier to send
         handleConnectToChat(null);
     }
 
     // protected methods --> can only be seen inside this package
-    protected void handleConnectToChat(String chatToSend) throws IOException {
+    protected void handleConnectToChat(String chatToSend) throws IOException, InterruptedException {
         if (chatToSend == null) {
             // get chat identifier from user
             System.out.print("Enter chat identifier (chatName#chatId): ");
@@ -99,8 +93,6 @@ public class ChatService extends Service {
         res = catchCommandRes();
 
         if (super.isSuccess(res)) {
-            super.cleanBuffer();
-
             // TODO: ADD ADMIN RELATED COMMANDS
             // TODO: add /help to view all the special commands
 
@@ -113,7 +105,7 @@ public class ChatService extends Service {
                  * and, as such, should not be sent as text messages to the server
                  */
                 tmp = super.keyboard.nextLine();
-
+                
                 // case "/back"
                 if (tmp.equals("/back"))
                     break;
@@ -132,8 +124,6 @@ public class ChatService extends Service {
 
                     if (!super.isSuccess(res)) System.out.println("Error: "  + res.getDescription());
 
-                    // as server sends NULL here, we clear the input stream
-                    super.cleanBuffer();
                     break;
                 }
 
@@ -155,9 +145,6 @@ public class ChatService extends Service {
                 } else {
                     System.out.println("- Error " + res.getDescription());
                 }
-
-                // as server sends NULL here, we clear the input stream
-                super.cleanBuffer();
             } while (!tmp.equals("/back"));
         } else {
             System.out.println("Error: " + res.getDescription());

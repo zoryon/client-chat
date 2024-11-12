@@ -1,107 +1,87 @@
 package com.clientchat.services;
 
 import java.io.IOException;
-import java.net.Socket;
 import java.util.ArrayList;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import com.clientchat.lib.SynchronizedBufferedReader;
 import com.clientchat.protocol.CommandType;
 import com.clientchat.protocol.JsonChat;
-import com.clientchat.protocol.JsonMessage;
+import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-public class EventListenerService extends Service implements Runnable {
-    // attributes
+public class EventListenerService extends Thread {
     private static EventListenerService instance;
+    private final SynchronizedBufferedReader in;
+    private final BlockingQueue<CommandType> commandQueue;
+    private final BlockingQueue<String> dataQueue;
     private ArrayList<JsonChat> chatList;
+    private boolean running;
 
-    // constructors
-    private EventListenerService(Socket socket) throws IOException {
-        super(socket);
+    private EventListenerService(SynchronizedBufferedReader in) {
+        this.in = in;
+        this.commandQueue = new LinkedBlockingQueue<>();
+        this.dataQueue = new LinkedBlockingQueue<>();
         this.chatList = new ArrayList<>();
+        this.running = true;
     }
 
-    // only one instance can exists at a time
-    public static EventListenerService getInstance(Socket socket) throws IOException {
+    public static EventListenerService getInstance(SynchronizedBufferedReader in) {
         if (instance == null) {
-            instance = new EventListenerService(socket);
+            instance = new EventListenerService(in);
         }
         return instance;
     }
 
-    // main body --> runned fn when thread starts
     @Override
     public void run() {
-        try {
-            catchInitialChats();
+        while (running) {
+            try {
+                // get the command type
+                CommandType command = CommandType.valueOf(in.readLine());
+                commandQueue.put(command);
 
-            // then start listening for updates
-            while (Service.isRunning) {
-                CommandType command = super.catchCommandRes();
                 switch (command) {
-                    case SEND_MSG: 
-                        JsonMessage msg = catchJsonReq(JsonMessage.class);
-
-                        if (msg != null) {
-                            // loop through the chatList
-                            for (JsonChat chat : chatList) {
-                                // stop when the match is found
-                                if (chat.getId() == msg.getChatId()) {
-                                    chat.addMessage(msg);
-                                    break;  
-                                }
-                            }
-                        } else {
-                            sendRes(CommandType.ERR_GEN);
-                        }
+                    case OK:
+                        // get the general data and it to the blocking queue
+                        String data = in.readLine();
+                        if (!data.equals("null")) dataQueue.put(data);
+                        break;
+                    case INIT:
+                        // catch the initial array when INIT CommandType is sent
+                        chatList = new Gson().fromJson(in.readLine(), new TypeToken<ArrayList<JsonChat>>() {}.getType());
                         break;
                     default:
-                        super.sendRes(CommandType.ERR_WRONG_DATA);
-                        continue;
+                        break;
                 }
-
-                // default OK response
-                super.sendRes(CommandType.OK);
-                super.sendJsonRes(null);
-
-                // add a delay of 500 milliseconds
-                Thread.sleep(500);
-            }
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // public methods
-    public ArrayList<JsonChat> getAllChats() {
-        return new ArrayList<>(chatList);
-    }
-
-    public void printAllChats() {
-        for (JsonChat chat : chatList) {
-            System.out.println(chat.getChatName() + "#" + chat.getId());
-        }
-    }
-
-    public ArrayList<JsonMessage> getChatMessages(int chatId) {
-        for (JsonChat chat : chatList) {
-            if (chat.getId() == chatId) {
-                return chat.getMessages();
+            } catch (IOException | InterruptedException e) {
+                System.out.println("Error in Event Listener Service: " + e.getMessage());
+                running = false;
             }
         }
-    
-        return new ArrayList<>();
     }
 
-    public void printChatMessages(int chatId) {
-        ArrayList<JsonMessage> messages = getChatMessages(chatId);
-
-        messages.forEach(message -> {
-            System.out.println(message.getSenderName() + "#" + message.getId() + ": " + message.getContent());
-        });
+    public ArrayList<JsonChat> getChatList() {
+        return chatList;
     }
 
-    // private methods --> can only be seen inside this class
-    private void catchInitialChats() throws IOException {
-        chatList = catchJsonReq(new TypeToken<ArrayList<JsonChat>>() {}.getType());
-        System.out.println(chatList);
+    public void stopListener() {
+        running = false;
+    }
+
+    public BlockingQueue<CommandType> getCommandQueue() {
+        return commandQueue;
+    }
+
+    public BlockingQueue<String> getDataQueue() {
+        return dataQueue;
+    }
+
+    public void printCommandAndData() {
+        CommandType command = commandQueue.peek();
+        System.out.println("Command: " + command);
+
+        String data = dataQueue.peek();
+        System.out.println("Data: " + data);
     }
 }
