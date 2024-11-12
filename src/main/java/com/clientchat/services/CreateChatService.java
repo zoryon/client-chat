@@ -2,10 +2,14 @@ package com.clientchat.services;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
+
 import com.clientchat.lib.ActionUtils;
 import com.clientchat.lib.MenuBuilder;
 import com.clientchat.lib.MenuOption;
 import com.clientchat.protocol.CommandType;
+import com.clientchat.protocol.JsonGroup;
+import com.clientchat.protocol.JsonUser;
 
 public class CreateChatService extends Service {
     // attributes
@@ -84,9 +88,16 @@ public class CreateChatService extends Service {
         
         sendReq(CommandType.NEW_GROUP);
 
-        // TODO: add participants here and send them togheter with groupName
-        // add a do while that loops till the user has finished
-        sendJsonReq(groupName);
+        // add participants
+        ArrayList<String> usernameList = new ArrayList<>();
+        System.out.println("Enter username (/stop to continue): ");
+        String tmp;
+        do {
+            tmp = super.keyboard.nextLine().trim();
+            usernameList.add(tmp);
+        } while (tmp.equals("/stop"));
+
+        sendJsonReq(new JsonGroup(groupName, usernameList));
 
         CommandType res = catchCommandRes();
         
