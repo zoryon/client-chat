@@ -135,7 +135,20 @@ public class ChatService extends Service {
                     // as server sends NULL here, we clear the input stream
                     super.cleanBuffer();
                     break;
+
+                
                 }
+                // case: "/help"
+                if (tmp.equals("/help")) {
+                    
+                    // initialize menu
+                    System.out.println("/back --> back to chats");
+                    System.out.println("/remove --> delete last message sent");
+
+
+                
+                    break;
+                }    
 
                 // case: send text message
                 super.sendReq(CommandType.SEND_MSG);
