@@ -59,4 +59,14 @@ public class JsonMessage {
     public void setContent(String content) {
         this.content = content;
     }
+
+    public boolean equals(JsonMessage msg) {
+        // compare the relevant fields for equality
+        return 
+            (this.getId() == msg.getId()) &&
+            (this.getChatId() == msg.getChatId()) &&
+            (this.getSenderId() == msg.getSenderId()) &&
+            (this.getSenderName().equals(msg.getSenderName())) &&
+            (this.getContent().equals(msg.getContent()));
+    }
 }

@@ -7,10 +7,12 @@ import java.util.concurrent.LinkedBlockingQueue;
 import com.clientchat.lib.SynchronizedBufferedReader;
 import com.clientchat.protocol.CommandType;
 import com.clientchat.protocol.JsonChat;
+import com.clientchat.protocol.JsonMessage;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 public class EventListenerService extends Thread {
+    // attributes
     private static EventListenerService instance;
     private final SynchronizedBufferedReader in;
     private final BlockingQueue<CommandType> commandQueue;
@@ -18,6 +20,7 @@ public class EventListenerService extends Thread {
     private ArrayList<JsonChat> chatList;
     private boolean running;
 
+    // constructors
     private EventListenerService(SynchronizedBufferedReader in) {
         this.in = in;
         this.commandQueue = new LinkedBlockingQueue<>();
@@ -26,6 +29,7 @@ public class EventListenerService extends Thread {
         this.running = true;
     }
 
+    // only one instance can exists at a time
     public static EventListenerService getInstance(SynchronizedBufferedReader in) {
         if (instance == null) {
             instance = new EventListenerService(in);
@@ -33,6 +37,7 @@ public class EventListenerService extends Thread {
         return instance;
     }
 
+    // main body --> runned fn when thread starts
     @Override
     public void run() {
         while (running) {
@@ -51,6 +56,32 @@ public class EventListenerService extends Thread {
                         // catch the initial array when INIT CommandType is sent
                         chatList = new Gson().fromJson(in.readLine(), new TypeToken<ArrayList<JsonChat>>() {}.getType());
                         break;
+                    case SEND_MSG:
+                        // add new msg to the array
+                        JsonMessage msg = new Gson().fromJson(in.readLine(), JsonMessage.class);
+
+                        chatList.forEach(chat -> {
+                            if (chat.getId() == msg.getChatId()) chat.getMessages().add(msg);
+                        });
+                        break;
+                    case RM_MSG:
+                        int msgId = Integer.parseInt(new Gson().fromJson(in.readLine(), String.class));
+                        
+                        for (JsonChat chat : chatList) {
+                            ArrayList<JsonMessage> chatMessages = chat.getMessages();
+                            for (int i = 0; i < chatMessages.size(); i++) {
+                                if (chatMessages.get(i).getId() == msgId) {
+                                    chat.getMessages().remove(i);
+                                }
+                            }
+                        }
+                        break;
+                    case NEW_CHAT:
+                        chatList.add(new Gson().fromJson(in.readLine(), JsonChat.class));
+                        break;
+                    case NEW_GROUP:
+                        // TODO
+                        break;
                     default:
                         break;
                 }
@@ -61,6 +92,7 @@ public class EventListenerService extends Thread {
         }
     }
 
+    // public methods
     public ArrayList<JsonChat> getChatList() {
         return chatList;
     }
@@ -83,5 +115,14 @@ public class EventListenerService extends Thread {
 
         String data = dataQueue.peek();
         System.out.println("Data: " + data);
+    }
+
+    // public chat-related methods
+    public ArrayList<JsonMessage> getChatMessages(int chatId) {
+        for (JsonChat chat : chatList) {
+            if (chat.getId() == chatId) return chat.getMessages();
+        }
+
+        return new ArrayList<JsonMessage>();
     }
 }

@@ -94,11 +94,12 @@ public class ChatService extends Service {
 
         if (super.isSuccess(res)) {
             // TODO: ADD ADMIN RELATED COMMANDS
-            // TODO: add /help to view all the special commands
 
-            // IMPORTANT TODO: run a thread which show the up-to-date messages inside the chat
             String tmp;
             do {
+                // thread which displays the up-to-date messages of a certain chat
+                new ChatMessagesDisplayService(socket, Integer.parseInt(chatToSend.split("#")[1]), super.eventListener).start();
+
                 /*
                  * get the user text message in loop.
                  * commands starting with "/" CAN be used as commands
@@ -106,7 +107,14 @@ public class ChatService extends Service {
                  */
                 tmp = super.keyboard.nextLine();
                 
-                // case "/back"
+                // case: "/help"
+                if (tmp.equals("/help")) {
+                    System.out.println("/back --> back to chats");
+                    System.out.println("/remove #messageId --> delete last message sent");
+                    break;
+                }
+
+                // case "/back" --> do nothing and just exit this chat loop
                 if (tmp.equals("/back"))
                     break;
 
@@ -120,7 +128,7 @@ public class ChatService extends Service {
 
                     super.sendReq(CommandType.RM_MSG);
                     super.sendJsonReq(msgId);
-                    res = catchCommandRes();
+                    res = super.catchCommandRes();
 
                     if (!super.isSuccess(res)) System.out.println("Error: "  + res.getDescription());
 
@@ -138,7 +146,7 @@ public class ChatService extends Service {
                  * after we have the chatId we transform it into an Integer.
                  */
                 super.sendJsonReq(new JsonMessage(Integer.parseInt(chatToSend.split("#")[1]), tmp));
-                res = catchCommandRes();
+                res = super.catchCommandRes();
 
                 if (super.isSuccess(res)) {
                     System.out.print("- *");
