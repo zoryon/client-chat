@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 import com.clientchat.protocol.JsonMessage;
+import com.google.gson.Gson;
 
 public class ChatMessagesDisplayService extends Thread {
     // attributes
@@ -25,9 +26,11 @@ public class ChatMessagesDisplayService extends Thread {
     public void run() {
         // continuously check for new messages until the user leaves the chat
         do {
-            do {
-                
-            } while (eventListener.hasUpdated);
+            if (eventListener.hasUpdated) {
+                JsonMessage msg = new Gson().fromJson(eventListener.getDataQueue().take());
+                System.out.println("[" + msg.getSenderName() + "] " + ": " + msg.getContent());
+                eventListener.hasUpdated = false;
+            }
         } while (isActive);
     }
 
