@@ -67,8 +67,6 @@ public class CreateChatService extends Service {
         // processing request
         sendReq(CommandType.NEW_CHAT);
         sendJsonReq(username);
-
-        eventListener.printCommandAndData();
         res = super.catchCommandRes();
 
         if (super.isSuccess(res)) {
@@ -86,8 +84,6 @@ public class CreateChatService extends Service {
         System.out.print("Enter the group name: ");
         String groupName = super.keyboard.nextLine().trim();
         
-        sendReq(CommandType.NEW_GROUP);
-
         // add participants
         ArrayList<String> usernameList = new ArrayList<>();
         System.out.println("Enter username (/stop to continue): ");
@@ -96,9 +92,9 @@ public class CreateChatService extends Service {
             tmp = super.keyboard.nextLine().trim();
             usernameList.add(tmp);
         } while (tmp.equals("/stop"));
-
+        
+        sendReq(CommandType.NEW_GROUP);
         sendJsonReq(new JsonGroup(groupName, usernameList));
-
         CommandType res = super.catchCommandRes();
         
         if (super.isSuccess(res)) {

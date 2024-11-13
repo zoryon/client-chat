@@ -1,5 +1,7 @@
 package com.clientchat.protocol;
 
+import com.clientchat.auth.AuthManager;
+
 public class JsonMessage {
     // attributes
     private int id;

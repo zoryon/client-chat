@@ -83,10 +83,11 @@ public class ChatService extends Service {
     protected void handleConnectToChat(String chatToSend) throws IOException, InterruptedException {
         if (chatToSend == null) {
             // get chat identifier from user
-            System.out.print("Enter chat identifier (chatName#chatId): ");
+            System.out.print("\nEnter chat identifier (chatName#chatId): ");
             chatToSend = super.keyboard.nextLine().trim();
         }
 
+        System.out.println("\n- - - " + chatToSend + " - - -");
         // making sure the user has rights to access the chat
         sendReq(CommandType.NAV_CHAT);
         sendJsonReq(chatToSend);

@@ -96,7 +96,7 @@ public class AuthService extends Service {
             System.out.println("You'll automatically be signed in");
             authManager.authenticate(user.getUsername());
         } else {
-            System.out.println("Error: " + res.getDescription());
+            System.out.println("Sign up error: " + res.getDescription());
         }
     }
 
@@ -109,7 +109,7 @@ public class AuthService extends Service {
             System.out.println("Successfully signed in!");
             authManager.authenticate(user.getUsername());
         } else {
-            System.out.println("Error: " + res.getDescription());
+            System.out.println("Sign in error: " + res.getDescription());
         }
     }
 

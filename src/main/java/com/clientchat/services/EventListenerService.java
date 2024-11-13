@@ -57,8 +57,8 @@ public class EventListenerService extends Thread {
                         break;
                     case INIT:
                         // catch the initial array when INIT CommandType is sent
-                        commandQueue.take();
                         chatList = new Gson().fromJson(in.readLine(), new TypeToken<ArrayList<JsonChat>>() {}.getType());
+                        commandQueue.take();
                         break;
                     case SEND_MSG:
                         // add new msg to the array
@@ -68,8 +68,7 @@ public class EventListenerService extends Thread {
                             if (chat.getId() == msg.getChatId()) chat.getMessages().add(msg);
                         });
 
-                        dataQueue.put(msg);
-                        hasUpdated = true;
+                        notifyUpdate();
                         break;
                     case RM_MSG:
                         int msgId = Integer.parseInt(new Gson().fromJson(in.readLine(), String.class));
@@ -83,11 +82,11 @@ public class EventListenerService extends Thread {
                             }
                         }
                         
-                        dataQueue.put(msg);
-                        hasUpdated = true;
+                        notifyUpdate();
                         break;
                     case NEW_CHAT:
                         chatList.add(new Gson().fromJson(in.readLine(), JsonChat.class));
+                        commandQueue.take();
                         break;
                     case NEW_GROUP:
                         // TODO
@@ -134,5 +133,13 @@ public class EventListenerService extends Thread {
         }
 
         return new ArrayList<JsonMessage>();
+    }
+
+    public void notifyUpdate() {
+        hasUpdated = true;
+    }
+
+    public void readUpdate() {
+        hasUpdated = false;
     }
 }
