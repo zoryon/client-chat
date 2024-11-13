@@ -25,25 +25,9 @@ public class ChatMessagesDisplayService extends Thread {
     public void run() {
         // continuously check for new messages until the user leaves the chat
         do {
-            try {
-                // fetch the latest messages from the event listener
-                ArrayList<JsonMessage> newMessages = fetchMessages();
-
-                // Find new messages
-                ArrayList<JsonMessage> newUniqueMessages = findNewMessages(newMessages);
-
-                // display only new messages, if there are any
-                if (!newUniqueMessages.isEmpty()) {
-                    displayMessages(newUniqueMessages);
-                    prevMessages = new ArrayList<>(newMessages);
-                }
-
-                // wait a short period to avoid congestion
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                System.out.println("Error in ChatMessagesDisplayService: " + e.getMessage());
-                isActive = false;
-            }
+            do {
+                
+            } while (eventListener.hasUpdated);
         } while (isActive);
     }
 
