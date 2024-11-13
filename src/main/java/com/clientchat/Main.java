@@ -17,7 +17,7 @@ public class Main {
              */
             AuthService.getInstance(socket).run(); // equal to "new AuthService(socket).run()"
         } catch (IOException e) {
-            System.err.println("Error during client execution: " + e.getMessage());
+            System.err.println("Error during connection with the server: " + e.getMessage());
         }
     }
 }

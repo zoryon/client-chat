@@ -3,6 +3,8 @@ package com.clientchat.services;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
+
+import com.clientchat.auth.AuthManager;
 import com.clientchat.lib.ActionUtils;
 import com.clientchat.lib.MenuBuilder;
 import com.clientchat.lib.MenuOption;
@@ -74,9 +76,7 @@ public class CreateChatService extends Service {
             System.out.println("Automatically connecting..");
 
             // get the identifier (chatName#chatId) and automatically connect
-            String negro = catchJsonReq(String.class);
-            System.out.println(negro);
-            ChatService.getInstance(socket).handleConnectToChat(negro);
+            ChatService.getInstance(socket).handleConnectToChat(catchJsonReq(String.class));
         } else {
             System.out.println("Error: " + res.getDescription());
         }
@@ -88,12 +88,14 @@ public class CreateChatService extends Service {
         
         // add participants
         ArrayList<String> usernameList = new ArrayList<>();
+        usernameList.add(AuthManager.getInstance().getUsername());
+
         System.out.println("Enter username (/stop to continue): ");
         String tmp;
         do {
             tmp = super.keyboard.nextLine().trim();
-            usernameList.add(tmp);
-        } while (tmp.equals("/stop"));
+            if (!tmp.equals("/stop")) usernameList.add(tmp);
+        } while (!tmp.equals("/stop"));
         
         sendReq(CommandType.NEW_GROUP);
         sendJsonReq(new JsonGroup(groupName, usernameList));
