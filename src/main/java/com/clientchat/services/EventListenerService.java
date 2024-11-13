@@ -1,10 +1,10 @@
 package com.clientchat.services;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import com.clientchat.lib.SynchronizedBufferedReader;
 import com.clientchat.protocol.CommandType;
 import com.clientchat.protocol.JsonChat;
 import com.clientchat.protocol.JsonMessage;
@@ -14,7 +14,7 @@ import com.google.gson.reflect.TypeToken;
 public class EventListenerService extends Thread {
     // attributes
     private static EventListenerService instance;
-    private final SynchronizedBufferedReader in;
+    private final BufferedReader in;
     private final BlockingQueue<CommandType> commandQueue;
     private final BlockingQueue<String> dataQueue;
     private ArrayList<JsonChat> chatList;
@@ -23,7 +23,7 @@ public class EventListenerService extends Thread {
     public boolean hasUpdated;
 
     // constructors
-    private EventListenerService(SynchronizedBufferedReader in) {
+    private EventListenerService(BufferedReader in) {
         this.in = in;
         this.commandQueue = new LinkedBlockingQueue<>();
         this.dataQueue = new LinkedBlockingQueue<>();
@@ -33,7 +33,7 @@ public class EventListenerService extends Thread {
     }
 
     // only one instance can exists at a time
-    public static EventListenerService getInstance(SynchronizedBufferedReader in) {
+    public static EventListenerService getInstance(BufferedReader in) {
         if (instance == null) {
             instance = new EventListenerService(in);
         }

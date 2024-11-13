@@ -1,7 +1,6 @@
 package com.clientchat.services;
 
 import com.clientchat.lib.MenuOption;
-import com.clientchat.lib.SynchronizedBufferedReader;
 import com.clientchat.protocol.CommandType;
 import com.google.gson.Gson;
 import java.io.BufferedReader;
@@ -16,8 +15,7 @@ import java.util.Scanner;
 public class Service {
     // attributes
     protected final Socket socket;
-    protected final BufferedReader tmp;
-    protected final SynchronizedBufferedReader in;
+    protected final BufferedReader in;
     protected final DataOutputStream out;
     protected final Scanner keyboard;
     protected final Gson gson;
@@ -40,9 +38,7 @@ public class Service {
         this.keyboard = new Scanner(System.in);
         this.out = new DataOutputStream(socket.getOutputStream());
         this.gson = new Gson();
-
-        this.tmp = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        this.in = new SynchronizedBufferedReader(tmp);
+        this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
         this.eventListener = EventListenerService.getInstance(in);
     }
