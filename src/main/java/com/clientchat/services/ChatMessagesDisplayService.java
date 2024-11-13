@@ -3,6 +3,7 @@ package com.clientchat.services;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
+import com.clientchat.protocol.CommandType;
 import com.clientchat.protocol.JsonMessage;
 
 public class ChatMessagesDisplayService extends Thread {
@@ -25,9 +26,30 @@ public class ChatMessagesDisplayService extends Thread {
     @Override
     public void run() {
         // continuously check for new messages until the user leaves the chat
+        for (JsonMessage msg : messagesCache) {
+            System.out.println("[" + msg.getSenderName() + "]: " + msg.getContent());
+        }
+
         do {
             try {
+                CommandType command = eventListener.getUpdateType();
+                if (command == null) continue;
 
+                messagesCache = eventListener.getChatMessages(chatId);
+                if (messagesCache.isEmpty()) continue;
+
+                switch (command) {
+                    case SEND_MSG:
+                        JsonMessage msg = messagesCache.get(messagesCache.size() - 1);
+                        
+                        System.out.println("[" + msg.getSenderName() + "]: " + msg.getContent());
+                        break;
+                    default:
+                        break;
+                }
+
+                // set eventListener.hasUpdated to false
+                eventListener.readUpdate();
                 
                 // reduce weight on machine
                 Thread.sleep(500);

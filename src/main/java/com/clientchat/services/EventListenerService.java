@@ -20,7 +20,7 @@ public class EventListenerService extends Thread {
     private ArrayList<JsonChat> chatList;
     private boolean running;
     
-    public boolean hasUpdated;
+    private CommandType updateType;
 
     // constructors
     private EventListenerService(BufferedReader in) {
@@ -29,7 +29,7 @@ public class EventListenerService extends Thread {
         this.dataQueue = new LinkedBlockingQueue<>();
         this.chatList = new ArrayList<>();
         this.running = true;
-        this.hasUpdated = false;
+        this.updateType = null;
     }
 
     // only one instance can exists at a time
@@ -66,18 +66,15 @@ public class EventListenerService extends Thread {
                     case SEND_MSG:
                         // add new msg to the array
                         JsonMessage msg = new Gson().fromJson(in.readLine(), JsonMessage.class);
-                        commandQueue.take();
-
                         chatList.forEach(chat -> {
                             if (chat.getId() == msg.getChatId()) chat.addMessage(msg);
                         });
-
-                        notifyUpdate();
+                        
+                        notifyUpdate(commandQueue.take());
                         break;
                     case RM_MSG:
                         int msgId = Integer.parseInt(new Gson().fromJson(in.readLine(), String.class));
-                        commandQueue.take();
-
+                        
                         for (JsonChat chat : chatList) {
                             ArrayList<JsonMessage> chatMessages = chat.getMessages();
                             for (int i = 0; i < chatMessages.size(); i++) {
@@ -86,12 +83,11 @@ public class EventListenerService extends Thread {
                                 }
                             }
                         }
-                        
-                        notifyUpdate();
+
+                        notifyUpdate(commandQueue.take());
                         break;
                     case NEW_CHAT:
                         chatList.add(new Gson().fromJson(in.readLine(), JsonChat.class));
-                        System.out.println(chatList);
                         commandQueue.take();
                         break;
                     case NEW_GROUP:
@@ -141,11 +137,15 @@ public class EventListenerService extends Thread {
         return new ArrayList<JsonMessage>();
     }
 
-    public void notifyUpdate() {
-        hasUpdated = true;
+    public void notifyUpdate(CommandType command) {
+        updateType = command;
     }
 
     public void readUpdate() {
-        hasUpdated = false;
+        updateType = null;
+    }
+
+    public CommandType getUpdateType() {
+        return updateType;
     }
 }

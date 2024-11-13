@@ -102,6 +102,7 @@ public class ChatService extends Service {
             ChatMessagesDisplayService.startDisplay();
             String tmp;
             do {
+                delay();
                 /*
                  * get the user text message in loop.
                  * commands starting with "/" CAN be used as commands
@@ -133,7 +134,7 @@ public class ChatService extends Service {
                     res = super.catchCommandRes();
 
                     if (!super.isSuccess(res)) System.out.println("Error: "  + res.getDescription());
-
+                    
                     continue;
                 }
 
@@ -151,8 +152,6 @@ public class ChatService extends Service {
                 res = super.catchCommandRes();
 
                 if (!super.isSuccess(res)) System.out.println("Error " + res.getDescription());
-
-                delay();
             } while (!tmp.equals("/back"));
         } else {
             System.out.println("Error: " + res.getDescription());
@@ -162,7 +161,7 @@ public class ChatService extends Service {
     }
 
     private void delay() throws InterruptedException {
-        // wait 1s before allowing to send other messages
-        Thread.sleep(1000);
+        // wait 800ms before allowing to send other messages
+        Thread.sleep(800);
     }
 }
