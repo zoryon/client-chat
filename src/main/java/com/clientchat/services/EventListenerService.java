@@ -46,7 +46,10 @@ public class EventListenerService extends Thread {
         while (running) {
             try {
                 // get the command type
-                CommandType command = CommandType.valueOf(in.readLine());
+                String commandStr = in.readLine();
+                if (commandStr.equals("null")) continue;
+                
+                CommandType command = CommandType.valueOf(commandStr);
                 commandQueue.put(command);
 
                 switch (command) {
@@ -63,16 +66,18 @@ public class EventListenerService extends Thread {
                     case SEND_MSG:
                         // add new msg to the array
                         JsonMessage msg = new Gson().fromJson(in.readLine(), JsonMessage.class);
+                        commandQueue.take();
 
                         chatList.forEach(chat -> {
-                            if (chat.getId() == msg.getChatId()) chat.getMessages().add(msg);
+                            if (chat.getId() == msg.getChatId()) chat.addMessage(msg);
                         });
 
                         notifyUpdate();
                         break;
                     case RM_MSG:
                         int msgId = Integer.parseInt(new Gson().fromJson(in.readLine(), String.class));
-                        
+                        commandQueue.take();
+
                         for (JsonChat chat : chatList) {
                             ArrayList<JsonMessage> chatMessages = chat.getMessages();
                             for (int i = 0; i < chatMessages.size(); i++) {
@@ -86,6 +91,7 @@ public class EventListenerService extends Thread {
                         break;
                     case NEW_CHAT:
                         chatList.add(new Gson().fromJson(in.readLine(), JsonChat.class));
+                        System.out.println(chatList);
                         commandQueue.take();
                         break;
                     case NEW_GROUP:

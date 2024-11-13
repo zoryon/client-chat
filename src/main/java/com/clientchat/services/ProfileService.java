@@ -135,11 +135,11 @@ public class ProfileService extends Service {
             @SuppressWarnings("unused")
             private String password;
             @SuppressWarnings("unused")
-            private U data;
+            private U username;
 
-            public RequestData(String password, U data) {
+            public RequestData(String password, U username) {
                 this.password = password;
-                this.data = data;
+                this.username = username;
             }
         }
 
@@ -147,6 +147,6 @@ public class ProfileService extends Service {
         super.sendJsonReq(new RequestData<>(password, toSend));
 
         // get and the return the response
-        return catchCommandRes();
+        return super.catchCommandRes();
     }
 }

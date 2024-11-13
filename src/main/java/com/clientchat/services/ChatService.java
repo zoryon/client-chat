@@ -87,17 +87,19 @@ public class ChatService extends Service {
             chatToSend = super.keyboard.nextLine().trim();
         }
 
-        System.out.println("\n- - - " + chatToSend + " - - -");
         // making sure the user has rights to access the chat
         sendReq(CommandType.NAV_CHAT);
-        sendJsonReq(chatToSend);
+        String chatId = chatToSend.split("#")[1];
+        sendJsonReq(chatId);
         res = catchCommandRes();
-
+        
         if (super.isSuccess(res)) {
+            System.out.println("\n- - - " + chatToSend + " - - -");
             // TODO: ADD ADMIN RELATED COMMANDS
 
             // thread which displays the up-to-date messages of a certain chat
             new ChatMessagesDisplayService(socket, Integer.parseInt(chatToSend.split("#")[1]), super.eventListener).start();
+            ChatMessagesDisplayService.startDisplay();
             String tmp;
             do {
                 /*
@@ -127,7 +129,7 @@ public class ChatService extends Service {
                     String msgId = tmp.split(" #")[1];
 
                     super.sendReq(CommandType.RM_MSG);
-                    super.sendJsonReq(msgId);
+                    super.sendJsonReq(new JsonMessage(Integer.parseInt(chatId), msgId));
                     res = super.catchCommandRes();
 
                     if (!super.isSuccess(res)) System.out.println("Error: "  + res.getDescription());
@@ -148,14 +150,19 @@ public class ChatService extends Service {
                 super.sendJsonReq(new JsonMessage(Integer.parseInt(chatToSend.split("#")[1]), tmp));
                 res = super.catchCommandRes();
 
-                if (super.isSuccess(res)) {
-                    System.out.print("- *");
-                } else {
-                    System.out.println("- Error " + res.getDescription());
-                }
+                if (!super.isSuccess(res)) System.out.println("Error " + res.getDescription());
+
+                delay();
             } while (!tmp.equals("/back"));
         } else {
             System.out.println("Error: " + res.getDescription());
         }
+
+        ChatMessagesDisplayService.stopDisplay();
+    }
+
+    private void delay() throws InterruptedException {
+        // wait 1s before allowing to send other messages
+        Thread.sleep(1000);
     }
 }

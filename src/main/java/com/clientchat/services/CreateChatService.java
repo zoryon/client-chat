@@ -74,7 +74,9 @@ public class CreateChatService extends Service {
             System.out.println("Automatically connecting..");
 
             // get the identifier (chatName#chatId) and automatically connect
-            ChatService.getInstance(socket).handleConnectToChat(catchJsonReq(String.class));
+            String negro = catchJsonReq(String.class);
+            System.out.println(negro);
+            ChatService.getInstance(socket).handleConnectToChat(negro);
         } else {
             System.out.println("Error: " + res.getDescription());
         }
