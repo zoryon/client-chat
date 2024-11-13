@@ -95,11 +95,10 @@ public class ChatService extends Service {
         if (super.isSuccess(res)) {
             // TODO: ADD ADMIN RELATED COMMANDS
 
+            // thread which displays the up-to-date messages of a certain chat
+            new ChatMessagesDisplayService(socket, Integer.parseInt(chatToSend.split("#")[1]), super.eventListener).start();
             String tmp;
             do {
-                // thread which displays the up-to-date messages of a certain chat
-                new ChatMessagesDisplayService(socket, Integer.parseInt(chatToSend.split("#")[1]), super.eventListener).start();
-
                 /*
                  * get the user text message in loop.
                  * commands starting with "/" CAN be used as commands
@@ -111,7 +110,7 @@ public class ChatService extends Service {
                 if (tmp.equals("/help")) {
                     System.out.println("/back --> back to chats");
                     System.out.println("/remove #messageId --> delete last message sent");
-                    break;
+                    continue;
                 }
 
                 // case "/back" --> do nothing and just exit this chat loop
@@ -132,7 +131,7 @@ public class ChatService extends Service {
 
                     if (!super.isSuccess(res)) System.out.println("Error: "  + res.getDescription());
 
-                    break;
+                    continue;
                 }
 
                 // case: send text message
