@@ -12,11 +12,11 @@ public class JsonMessage {
     public JsonMessage(int chatId, String content) {
         this.chatId = chatId;
         this.content = content;
-
+        this.senderName = AuthManager.getInstance().getUsername();
+        
         // the server will modify these
         this.id = 0;
         this.senderId = 0;
-        this.senderName = null;
     }
 
     // getters and setters
