@@ -61,6 +61,8 @@ public class ChatService extends Service {
     // private methods --> can only be seen inside this class
     private void handleViewUserChats() {
         System.out.println("Your chats:");
+
+        super.eventListener.printUserChatList();
     }
 
     private void handleViewProfile() throws IOException {
@@ -88,9 +90,9 @@ public class ChatService extends Service {
         }
 
         // making sure the user has rights to access the chat
-        sendReq(CommandType.NAV_CHAT);
+        super.sendReq(CommandType.NAV_CHAT);
         String chatId = chatToSend.split("#")[1];
-        sendJsonReq(chatId);
+        super.sendJsonReq(chatId);
         res = catchCommandRes();
         
         if (super.isSuccess(res)) {

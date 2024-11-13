@@ -91,7 +91,8 @@ public class EventListenerService extends Thread {
                         commandQueue.take();
                         break;
                     case NEW_GROUP:
-                        // TODO
+                        chatList.add(new Gson().fromJson(in.readLine(), JsonChat.class));
+                        commandQueue.take();
                         break;
                     default:
                         break;
@@ -104,8 +105,14 @@ public class EventListenerService extends Thread {
     }
 
     // public methods
-    public ArrayList<JsonChat> getChatList() {
-        return chatList;
+    public void printUserChatList() {
+        for (JsonChat chat : chatList) {
+            System.out.println(chat.getChatName() + "#" + chat.getId());
+        }
+
+        if (chatList.isEmpty()) {
+            System.out.println("Nessuna chat presente..");
+        }
     }
 
     public void stopListener() {
@@ -135,6 +142,10 @@ public class EventListenerService extends Thread {
         }
 
         return new ArrayList<JsonMessage>();
+    }
+
+    public boolean addChat(JsonChat newChat) {
+        return chatList.add(newChat);
     }
 
     public void notifyUpdate(CommandType command) {

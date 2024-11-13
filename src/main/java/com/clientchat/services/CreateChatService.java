@@ -9,6 +9,7 @@ import com.clientchat.lib.ActionUtils;
 import com.clientchat.lib.MenuBuilder;
 import com.clientchat.lib.MenuOption;
 import com.clientchat.protocol.CommandType;
+import com.clientchat.protocol.JsonChat;
 import com.clientchat.protocol.JsonGroup;
 
 public class CreateChatService extends Service {
@@ -72,11 +73,20 @@ public class CreateChatService extends Service {
         res = super.catchCommandRes();
 
         if (super.isSuccess(res)) {
+            String chatTmp = catchJsonReq(String.class);
+
+            // [0] is the chat name
+            // [1] is the actual chatId
+            String[] chatId = chatTmp.split("#");
+
+            JsonChat newChat = new JsonChat(Integer.parseInt(chatId[1]), chatId[0]);
+            super.eventListener.addChat(newChat);
+
             System.out.println("Private direct chat created successfully.");
             System.out.println("Automatically connecting..");
 
             // get the identifier (chatName#chatId) and automatically connect
-            ChatService.getInstance(socket).handleConnectToChat(catchJsonReq(String.class));
+            ChatService.getInstance(socket).handleConnectToChat(chatTmp);
         } else {
             System.out.println("Error: " + res.getDescription());
         }
@@ -102,11 +112,20 @@ public class CreateChatService extends Service {
         CommandType res = super.catchCommandRes();
         
         if (super.isSuccess(res)) {
+            String groupTmp = catchJsonReq(String.class);
+
+            // [0] is the chat name
+            // [1] is the actual chatId
+            String[] chatId = groupTmp.split("#");
+
+            JsonChat newChat = new JsonChat(Integer.parseInt(chatId[1]), chatId[0]);
+            super.eventListener.addChat(newChat);
+
             System.out.println("Private group chat created successfully.");
             System.out.println("Automatically connecting..");
 
             // get the identifier (chatName#chatId) and automatically connect
-            ChatService.getInstance(socket).handleConnectToChat(catchJsonReq(String.class));
+            ChatService.getInstance(socket).handleConnectToChat(groupTmp);
         } else {
             System.out.println("Error: " + res.getDescription());
         }
