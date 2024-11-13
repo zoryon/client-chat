@@ -19,6 +19,7 @@ public class EventListenerService extends Thread {
     private final BlockingQueue<String> dataQueue;
     private ArrayList<JsonChat> chatList;
     private boolean running;
+    private boolean hasUpdated;
 
     // constructors
     private EventListenerService(SynchronizedBufferedReader in) {
@@ -27,6 +28,7 @@ public class EventListenerService extends Thread {
         this.dataQueue = new LinkedBlockingQueue<>();
         this.chatList = new ArrayList<>();
         this.running = true;
+        this.hasUpdated = false;
     }
 
     // only one instance can exists at a time
@@ -54,6 +56,7 @@ public class EventListenerService extends Thread {
                         break;
                     case INIT:
                         // catch the initial array when INIT CommandType is sent
+                        commandQueue.take();
                         chatList = new Gson().fromJson(in.readLine(), new TypeToken<ArrayList<JsonChat>>() {}.getType());
                         break;
                     case SEND_MSG:
@@ -63,6 +66,9 @@ public class EventListenerService extends Thread {
                         chatList.forEach(chat -> {
                             if (chat.getId() == msg.getChatId()) chat.getMessages().add(msg);
                         });
+
+                        dataQueue.put(msg);
+                        hasUpdated = true;
                         break;
                     case RM_MSG:
                         int msgId = Integer.parseInt(new Gson().fromJson(in.readLine(), String.class));
@@ -75,6 +81,9 @@ public class EventListenerService extends Thread {
                                 }
                             }
                         }
+                        
+                        dataQueue.put(msg);
+                        hasUpdated = true;
                         break;
                     case NEW_CHAT:
                         chatList.add(new Gson().fromJson(in.readLine(), JsonChat.class));
