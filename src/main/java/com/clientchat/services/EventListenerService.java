@@ -19,7 +19,8 @@ public class EventListenerService extends Thread {
     private final BlockingQueue<String> dataQueue;
     private ArrayList<JsonChat> chatList;
     private boolean running;
-    private boolean hasUpdated;
+    
+    public boolean hasUpdated;
 
     // constructors
     private EventListenerService(SynchronizedBufferedReader in) {
