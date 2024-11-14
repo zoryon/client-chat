@@ -43,7 +43,7 @@ public class ProfileService extends Service {
      * main body (NOT A THREAD) --> fn to run.
      * it's just to divide code in many files, instead of a single one
      */
-    public boolean run() throws IOException {
+    public boolean run() throws IOException, InterruptedException {
         do {
             MenuOption.printMenu("- - - " + AuthManager.getInstance().getUsername() + "'s" + " PROFILE - - -", super.menuOptions);
 
@@ -52,6 +52,9 @@ public class ProfileService extends Service {
 
             // get the action to perform based on the user's choice
             MenuOption selectedOption = super.menuOptions.getOrDefault(choice, new MenuOption("Unknown option", super::handleUnknownOption));
+
+            // manage logout
+            if (choice.equals("3")) return handleLogout();
 
             // run the passed fn related to the user's choice
             selectedOption.getAction().run();
@@ -76,7 +79,7 @@ public class ProfileService extends Service {
         }
     }
 
-    private void handleLogout() throws IOException, InterruptedException {
+    private boolean handleLogout() throws IOException, InterruptedException {
         super.sendReq(CommandType.LOGOUT);
         res = super.catchCommandRes();
 
@@ -86,10 +89,11 @@ public class ProfileService extends Service {
              * this send the user to the auth menu
              */
             AuthManager.getInstance().logout();
-            choice = "0";
-        } else {
-            System.out.println(res.getDescription());
-        }
+            return true;
+        } 
+            
+        System.out.println(res.getDescription());
+        return false;
     }
 
     private void handleBack() throws IOException {

@@ -65,7 +65,7 @@ public class ChatService extends Service {
         super.eventListener.printUserChatList();
     }
 
-    private void handleViewProfile() throws IOException {
+    private void handleViewProfile() throws IOException, InterruptedException {
         // starting the loop with user's profile menu
         // if method return true it means the user wants to logout (NOT EXIT)
         if (ProfileService.getInstance(socket).run()) // equal to "new ProfileService(socket).run()"
