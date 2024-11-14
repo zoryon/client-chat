@@ -22,7 +22,7 @@ public class ChatService extends Service {
         super.initializeMenuOptions(
             new MenuBuilder()
                 .addOption("0", "Exit", ActionUtils.wrapAction(super::handleExit))
-                .addOption("1", "View your chats", this::handleViewUserChats)
+                .addOption("1", "View your chats", this::handleViewUserChatList)
                 .addOption("2", "Create a chat", ActionUtils.wrapAction(this::handleCreateChat))
                 .addOption("3", "Connect to a chat", ActionUtils.wrapAction(this::handleConnectToChat))
                 .addOption("4", "Manage profile", ActionUtils.wrapAction(this::handleViewProfile))
@@ -59,9 +59,8 @@ public class ChatService extends Service {
     }
 
     // private methods --> can only be seen inside this class
-    private void handleViewUserChats() {
-        System.out.println("Your chats:");
-
+    private void handleViewUserChatList() {
+        System.out.println("\nYour chats:");
         super.eventListener.printUserChatList();
     }
 
@@ -77,27 +76,42 @@ public class ChatService extends Service {
     }
 
     private void handleConnectToChat() throws IOException, InterruptedException {
+        // show the user their chatlist
+        handleViewUserChatList();
+
         // can call this version of the fn, if there's no chat identifier to send
         handleConnectToChat(null);
     }
 
     // protected methods --> can only be seen inside this package
     protected void handleConnectToChat(String chatToSend) throws IOException, InterruptedException {
-        if (chatToSend == null) {
+        if (chatToSend == null || chatToSend.equals("") || !chatToSend.contains("#")) {
             // get chat identifier from user
             System.out.print("\nEnter chat identifier (chatName#chatId): ");
             chatToSend = super.keyboard.nextLine().trim();
+
+            if (chatToSend == null || chatToSend.equals("") || !chatToSend.contains("#")) {
+                System.out.println("Invalid input! Please use the format chatName#chatId");
+                return;
+            }
         }
 
         // making sure the user has rights to access the chat
         super.sendReq(CommandType.NAV_CHAT);
-        String chatId = chatToSend.split("#")[1];
+
+        String[] parts = chatToSend.split("#");
+        if (parts.length != 2) {
+            System.out.println("Invalid input! Please use the format chatName#chatId");
+            return;
+        }
+
+        String chatId = parts[1];
         super.sendJsonReq(chatId);
         res = catchCommandRes();
         
         if (super.isSuccess(res)) {
-            System.out.println("\n- - - " + chatToSend + " - - -");
-            // TODO: ADD ADMIN RELATED COMMANDS
+            System.out.println("\nConnected successfully...");
+            System.out.println("- - - " + chatToSend + " - - -");
 
             // thread which displays the up-to-date messages of a certain chat
             new ChatMessagesDisplayService(socket, Integer.parseInt(chatToSend.split("#")[1]), super.eventListener).start();

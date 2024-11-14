@@ -25,11 +25,11 @@ public class ChatMessagesDisplayService extends Thread {
     // main body --> runned fn when thread starts
     @Override
     public void run() {
-        // continuously check for new messages until the user leaves the chat
         for (JsonMessage msg : messagesCache) {
             System.out.println("[" + msg.getSenderName() + "]: " + msg.getContent());
         }
-
+        
+        // continuously check for new messages until the user leaves the chat
         do {
             try {
                 CommandType command = eventListener.getUpdateType();
