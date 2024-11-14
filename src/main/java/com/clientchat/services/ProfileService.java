@@ -7,6 +7,7 @@ import com.clientchat.lib.ActionUtils;
 import com.clientchat.lib.MenuBuilder;
 import com.clientchat.lib.MenuOption;
 import com.clientchat.protocol.CommandType;
+import com.clientchat.protocol.JsonUser;
 
 public class ProfileService extends Service {
     // attributes
@@ -68,6 +69,7 @@ public class ProfileService extends Service {
         res = reqWithSecurityConfirmation(CommandType.UPD_NAME, newUsername);
 
         if (super.isSuccess(res)) {
+            AuthManager.getInstance().authenticate(newUsername);
             System.out.println("Successfully changed username to: " + newUsername);
         } else {
             System.out.println(res.getDescription());
@@ -125,26 +127,8 @@ public class ProfileService extends Service {
         System.out.print("To confirm this action, enter your password: ");
         String password = super.keyboard.nextLine().trim();
 
-
-        // TODO: there's an error after entering the password
-        /*
-         * create a class for password and data only.
-         * "<U>" share the same concept as "<T>"
-         */
-        class RequestData<U> {
-            @SuppressWarnings("unused")
-            private String password;
-            @SuppressWarnings("unused")
-            private U username;
-
-            public RequestData(String password, U username) {
-                this.password = password;
-                this.username = username;
-            }
-        }
-
         // send json password
-        super.sendJsonReq(new RequestData<>(password, toSend));
+        super.sendJsonReq(new JsonUser(toSend.toString(), password));
 
         // get and the return the response
         return super.catchCommandRes();

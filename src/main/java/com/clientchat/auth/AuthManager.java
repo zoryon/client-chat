@@ -35,6 +35,7 @@ public class AuthManager {
         this.isAuthenticated = false;
     }
     
+    // getters and setters
     public String getUsername() {
         return username;
     }
