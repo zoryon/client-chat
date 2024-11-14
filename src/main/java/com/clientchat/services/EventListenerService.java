@@ -52,7 +52,7 @@ public class EventListenerService extends Thread {
 
                 switch (command) {
                     case OK:
-                        // get the general data and it to the blocking queue
+                        // get the general data and push it into the blocking queue
                         String data = in.readLine();
                         if (!data.equals("null")) dataQueue.put(data);
                         break;
@@ -64,6 +64,7 @@ public class EventListenerService extends Thread {
                     case SEND_MSG:
                         // add new msg to the array
                         JsonMessage msg = new Gson().fromJson(in.readLine(), JsonMessage.class);
+                        System.out.println(msg.getContent() + msg.getSenderName());
                         chatList.forEach(chat -> {
                             if (chat.getId() == msg.getChatId()) chat.addMessage(msg);
                         });
@@ -102,11 +103,11 @@ public class EventListenerService extends Thread {
     // public methods
     public void printUserChatList() {
         for (JsonChat chat : chatList) {
-            System.out.println(chat.getChatName() + "#" + chat.getId());
+            System.out.println("[" + chat.getChatName() + "#" + chat.getId() + "]");
         }
 
         if (chatList.isEmpty()) {
-            System.out.println("Nessuna chat presente..");
+            System.out.println("[Nessuna chat presente..]");
         }
     }
 

@@ -1,5 +1,6 @@
 package com.clientchat.services;
 
+import com.clientchat.lib.Console;
 import com.clientchat.lib.MenuOption;
 import com.clientchat.protocol.CommandType;
 import com.google.gson.Gson;
@@ -20,7 +21,6 @@ public class Service {
     protected final Scanner keyboard;
     protected final Gson gson;
     protected static boolean isRunning = true;
-
     protected EventListenerService eventListener;
 
     /*
@@ -57,7 +57,7 @@ public class Service {
         return eventListener.getCommandQueue().take(); // wait for a socket stream input
     }
 
-    protected <T> T catchJsonReq(Type type) {
+    protected <T> T catchJsonRes(Type type) {
         try {
             String json = catchRes();
             return gson.fromJson(json, type);
@@ -65,6 +65,10 @@ public class Service {
             System.out.println(e.getMessage());
             return null;
         }
+    }
+
+    protected <T> T catchJsonReq(Type type) {
+        return catchJsonRes(type);
     }
 
     protected void sendReq(CommandType req) throws IOException {
@@ -95,10 +99,12 @@ public class Service {
 
     protected void handleExit() throws IOException, InterruptedException {
         // stop the listening service, as it would still be listening while the socket get closed
+        Service.isRunning = false;
         EventListenerService.getInstance(in).interrupt();
 
         sendReq(CommandType.EXIT);
-        Service.isRunning = false;
+        
+        Console.clear();
         System.out.println("Thank you for having trusted us!");
     }
 

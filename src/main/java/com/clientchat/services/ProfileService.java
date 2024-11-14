@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.Socket;
 import com.clientchat.auth.AuthManager;
 import com.clientchat.lib.ActionUtils;
+import com.clientchat.lib.Console;
 import com.clientchat.lib.MenuBuilder;
 import com.clientchat.lib.MenuOption;
 import com.clientchat.protocol.CommandType;
@@ -58,7 +59,7 @@ public class ProfileService extends Service {
 
             // run the passed fn related to the user's choice
             selectedOption.getAction().run();
-        } while (!choice.equals("0"));
+        } while (Service.isRunning && !choice.equals("0"));
 
         return false;
     }
@@ -73,6 +74,8 @@ public class ProfileService extends Service {
 
         if (super.isSuccess(res)) {
             AuthManager.getInstance().authenticate(newUsername);
+            
+            Console.clear();
             System.out.println("Successfully changed username to: " + newUsername);
         } else {
             System.out.println(res.getDescription());
@@ -101,6 +104,7 @@ public class ProfileService extends Service {
          * set choice to "0" to leave this loop, without exiting the app.
          * this send the user to the service menu
          */
+        Console.clear();
         choice = "0";
     }
 

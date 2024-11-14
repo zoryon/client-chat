@@ -11,7 +11,7 @@ public class Main {
             Socket socket = new Socket("localhost", 3000);
 
             /*
-             * AuthService.run() is not a thread, it simulates a main from another class.
+             * AuthService.run() is not a thread, it simulates a main, but from another class.
              * basically, main will be waiting AuthService to finish
              * before continuing with the normal execution of the code.
              */

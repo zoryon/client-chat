@@ -21,6 +21,17 @@ public class JsonMessage {
         this.senderId = 0;
     }
 
+    public JsonMessage(int chatId, int id) {
+        this.chatId = chatId;
+        this.senderName = AuthManager.getInstance().getUsername();
+        
+        this.content = null;
+        this.senderId = 0;
+        
+        // the server will modify these
+        this.id = id;
+    }
+
     // getters and setters
     public int getId() {
         return id;

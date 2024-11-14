@@ -2,6 +2,7 @@ package com.clientchat.services;
 
 import com.clientchat.auth.AuthManager;
 import com.clientchat.lib.ActionUtils;
+import com.clientchat.lib.Console;
 import com.clientchat.lib.MenuBuilder;
 import com.clientchat.lib.MenuOption;
 import com.clientchat.protocol.CommandType;
@@ -45,14 +46,15 @@ public class AuthService extends Service {
         it's just to divide code in many files, instead of a single one
     */
     public void run() {
+        Console.clear();
         try {
             // everything will be run inside this loop
             while (Service.isRunning) {
                 if (!authManager.isAuthenticated()) {
                     handleAuthenticationMenu();
                 } else {
-                    // print the logged in username
-                    System.out.println("\nLogged in as: " + authManager.getUsername());
+                    // print a welcome message for the user
+                    System.out.println(super.newLine() + "Welcome, " + authManager.getUsername() + "!");
 
                     /* 
                         ChatService.run() is not a thread, it simulates a main from another class.
@@ -92,10 +94,12 @@ public class AuthService extends Service {
         CommandType res = super.catchCommandRes();
 
         if (super.isSuccess(res)) {
+            Console.clear();
             System.out.println(newLine() + "Successfully signed up!");
             System.out.println("You'll automatically be signed in");
             authManager.authenticate(user.getUsername());
         } else {
+            Console.clear();
             System.out.println("Sign up error: " + res.getDescription());
         }
     }
@@ -106,15 +110,17 @@ public class AuthService extends Service {
         CommandType res = super.catchCommandRes();
 
         if (super.isSuccess(res)) {
+            Console.clear();
             System.out.println("Successfully signed in!");
             authManager.authenticate(user.getUsername());
         } else {
+            Console.clear();
             System.out.println("Sign in error: " + res.getDescription());
         }
     }
 
     private JsonUser getCredentialsFromUser() {
-        System.out.print("\nEnter username: ");
+        System.out.print(super.newLine() + "Enter username: ");
         String username = super.keyboard.nextLine().trim();
 
         System.out.print("Enter password: ");

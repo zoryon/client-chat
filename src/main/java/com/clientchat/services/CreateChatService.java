@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import com.clientchat.auth.AuthManager;
 import com.clientchat.lib.ActionUtils;
+import com.clientchat.lib.Console;
 import com.clientchat.lib.MenuBuilder;
 import com.clientchat.lib.MenuOption;
 import com.clientchat.protocol.CommandType;
@@ -53,12 +54,13 @@ public class CreateChatService extends Service {
             choice = super.keyboard.nextLine().trim();
 
             // get the action to perform based on the user's choice
-            MenuOption selectedOption = super.menuOptions.getOrDefault(choice,
-                    new MenuOption("Unknown option", super::handleUnknownOption));
+            MenuOption selectedOption = super.menuOptions.getOrDefault(choice, new MenuOption("Unknown option", super::handleUnknownOption));
 
             // run the passed fn related to the user's choice
             selectedOption.getAction().run();
-        } while (!choice.equals("0"));
+        } while (Service.isRunning && !choice.equals("0"));
+
+        Console.clear();
     }
 
     // private methods --> can only be seen inside this class
@@ -82,6 +84,7 @@ public class CreateChatService extends Service {
             JsonChat newChat = new JsonChat(Integer.parseInt(chatId[1]), chatId[0]);
             super.eventListener.addChat(newChat);
 
+            Console.clear();
             System.out.println("Private direct chat created successfully.");
             System.out.println("Automatically connecting..");
 
@@ -122,6 +125,7 @@ public class CreateChatService extends Service {
             JsonChat newChat = new JsonChat(Integer.parseInt(chatId[1]), chatId[0]);
             super.eventListener.addChat(newChat);
 
+            Console.clear();
             System.out.println("Private group chat created successfully.");
             System.out.println("Automatically connecting..");
 

@@ -24,7 +24,7 @@ public class MenuOption {
 
     // methods
     public static void printMenu(String title, Map<String, MenuOption> options) {
-        System.out.println("\n" + title);
+        System.out.println(title);
         options.forEach((key, option) -> System.out.println(key + ") " + option.getDescription()));
         System.out.print(": ");
     }
