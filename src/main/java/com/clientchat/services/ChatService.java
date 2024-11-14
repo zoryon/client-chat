@@ -164,6 +164,6 @@ public class ChatService extends Service {
 
     private void delay() throws InterruptedException {
         // wait 800ms before allowing to send other messages
-        Thread.sleep(800);
+        Thread.sleep(300);
     }
 }

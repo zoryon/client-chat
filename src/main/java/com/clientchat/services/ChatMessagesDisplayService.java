@@ -52,7 +52,7 @@ public class ChatMessagesDisplayService extends Thread {
                 eventListener.readUpdate();
                 
                 // reduce weight on machine
-                Thread.sleep(500);
+                Thread.sleep(300);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
