@@ -94,8 +94,10 @@ public class Service {
     }
 
     protected void handleExit() throws IOException, InterruptedException {
+        // stop the listening service, as it would still be listening while the socket get closed
+        EventListenerService.getInstance(in).interrupt();
+
         sendReq(CommandType.EXIT);
-        stopService();
         Service.isRunning = false;
         System.out.println("Thank you for having trusted us!");
     }
@@ -107,10 +109,5 @@ public class Service {
 
     protected void handleUnknownOption() {
         System.out.println("Unknown option. Please try again.");
-    }
-
-    public void stopService() throws InterruptedException {
-        eventListener.stopListener();
-        eventListener.join();
     }
 }

@@ -18,7 +18,6 @@ public class EventListenerService extends Thread {
     private final BlockingQueue<CommandType> commandQueue;
     private final BlockingQueue<String> dataQueue;
     private ArrayList<JsonChat> chatList;
-    private boolean running;
     
     private CommandType updateType;
 
@@ -28,7 +27,6 @@ public class EventListenerService extends Thread {
         this.commandQueue = new LinkedBlockingQueue<>();
         this.dataQueue = new LinkedBlockingQueue<>();
         this.chatList = new ArrayList<>();
-        this.running = true;
         this.updateType = null;
     }
 
@@ -43,11 +41,11 @@ public class EventListenerService extends Thread {
     // main body --> runned fn when thread starts
     @Override
     public void run() {
-        while (running) {
+        while (Service.isRunning) {
             try {
                 // get the command type
                 String commandStr = in.readLine();
-                if (commandStr.equals("null")) continue;
+                if (commandStr == null || commandStr.equals("null")) continue;
                 
                 CommandType command = CommandType.valueOf(commandStr);
                 commandQueue.put(command);
@@ -97,10 +95,7 @@ public class EventListenerService extends Thread {
                     default:
                         break;
                 }
-            } catch (IOException | InterruptedException e) {
-                System.out.println("Error in Event Listener Service: " + e.getMessage());
-                running = false;
-            }
+            } catch (IOException | InterruptedException e) { }
         }
     }
 
@@ -113,10 +108,6 @@ public class EventListenerService extends Thread {
         if (chatList.isEmpty()) {
             System.out.println("Nessuna chat presente..");
         }
-    }
-
-    public void stopListener() {
-        running = false;
     }
 
     public BlockingQueue<CommandType> getCommandQueue() {
