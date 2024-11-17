@@ -179,6 +179,10 @@ public class ChatService extends Service {
                 super.sendJsonReq(new JsonMessage(Integer.parseInt(chatId), tmp));
                 res = super.catchCommandRes();
 
+                // catch res message
+                JsonMessage msg = super.catchJsonRes(JsonMessage.class);
+                eventListener.addMessage(msg);
+
                 if (!super.isSuccess(res)) System.out.println("Error " + res.getDescription());
             } while (!tmp.equals("/back"));
             Console.clear();

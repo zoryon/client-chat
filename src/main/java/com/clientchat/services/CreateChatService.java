@@ -75,7 +75,7 @@ public class CreateChatService extends Service {
         res = super.catchCommandRes();
 
         if (super.isSuccess(res)) {
-            String chatTmp = catchJsonReq(String.class);
+            String chatTmp = catchJsonRes(String.class);
 
             // [0] is the chat name
             // [1] is the actual chatId

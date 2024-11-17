@@ -21,7 +21,7 @@ public class ChatMessagesDisplayService extends Thread {
         this.chatId = chatId;
         this.eventListener = eventListener;
         this.messagesCache = new ArrayList<>(eventListener.getChatMessages(chatId));
-
+        
         ChatMessagesDisplayService.isActive = false;
     }
 

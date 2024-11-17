@@ -64,7 +64,6 @@ public class EventListenerService extends Thread {
                     case SEND_MSG:
                         // add new msg to the array
                         JsonMessage msg = new Gson().fromJson(in.readLine(), JsonMessage.class);
-                        System.out.println(msg.getContent() + msg.getSenderName());
                         chatList.forEach(chat -> {
                             if (chat.getId() == msg.getChatId()) chat.addMessage(msg);
                         });
@@ -138,6 +137,10 @@ public class EventListenerService extends Thread {
 
     public boolean addChat(JsonChat newChat) {
         return chatList.add(newChat);
+    }
+
+    public boolean addMessage(JsonMessage msg) {
+        return getChatMessages(msg.getChatId()).add(msg);
     }
 
     public void notifyUpdate(CommandType command) {
