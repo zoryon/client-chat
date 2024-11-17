@@ -56,11 +56,10 @@ public class ChatMessagesDisplayService extends Thread {
                         }
                         break;
                     case RM_MSG:
-                        Console.clear();
-
-                        // display again the whole chat
-                        displayTitle();
-                        displayAllChatMessages();
+                        reloadChat();
+                        break;
+                    case UPD_MSG:
+                        reloadChat();
                         break;
                     default:
                 }
@@ -85,12 +84,18 @@ public class ChatMessagesDisplayService extends Thread {
     }
 
     // private methods --> can only be seen inside this class
+    private void reloadChat() {
+        Console.clear();
+        displayTitle();
+        displayAllChatMessages();
+    }
+
     private void displayAllChatMessages() {
         for (JsonMessage msg : messagesCache) {
             if (!hasSameIdAsLastMessageDisplayed(msg)) {
                 if (msg.getSenderName().equals(AuthManager.getInstance().getUsername())) {
                     System.out.println(msg.getContent());
-                    System.out.println("[#" + msg.getId() + "]" + "\n\n");
+                    System.out.println("[#" + msg.getId() + "]" + "\n");
                 } else {
                     System.out.println("[" + msg.getSenderName() + "]: " + msg.getContent());
                 }

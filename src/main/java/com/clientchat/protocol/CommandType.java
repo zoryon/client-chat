@@ -10,6 +10,7 @@ public enum CommandType {
     NAV_CHAT("Navigate to specified chat or group"),
     SEND_MSG("Send a new message"),
     RM_MSG("Remove a message"),
+    UPD_MSG("Update the content of a message"),
     UPD_NAME("Change username"),
     REQ_LOGGED_USER("View information regarding the logged in user"),
     REQ_ALL_USERS("View all users in the system"),

@@ -84,6 +84,20 @@ public class EventListenerService extends Thread {
 
                         notifyUpdate(commandQueue.take());
                         break;
+                    case UPD_MSG:
+                        JsonMessage updtdMsg = new Gson().fromJson(in.readLine(), JsonMessage.class);
+                            
+                        for (JsonChat chat : chatList) {
+                            ArrayList<JsonMessage> chatMessages = chat.getMessages();
+                            for (int i = 0; i < chatMessages.size(); i++) {
+                                if (chatMessages.get(i).getId() == updtdMsg.getId()) {
+                                    chat.getMessages().get(i).setContent(updtdMsg.getContent());
+                                }
+                            }
+                        }
+
+                        notifyUpdate(commandQueue.take());
+                        break;
                     case NEW_CHAT:
                         chatList.add(new Gson().fromJson(in.readLine(), JsonChat.class));
                         commandQueue.take();

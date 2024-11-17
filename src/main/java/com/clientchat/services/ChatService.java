@@ -88,26 +88,26 @@ public class ChatService extends Service {
 
     // protected methods --> can only be seen inside this package
     protected void handleConnectToChat(String chatToSend) throws IOException, InterruptedException {
-        if (chatToSend == null || chatToSend.trim().equals("") || !chatToSend.contains("#")) {
+        if (chatToSend == null || chatToSend.trim().isEmpty() || !chatToSend.contains("#")) {
             // get chat identifier from user
             System.out.print(super.newLine() + "Enter chat identifier (chatName#chatId): ");
             chatToSend = super.keyboard.nextLine().trim();
-
-            if (chatToSend == null || chatToSend.equals("") || !chatToSend.contains("#")) {
+    
+            if (chatToSend == null || chatToSend.isEmpty() || !chatToSend.contains("#")) {
                 System.out.println("Invalid input! Please use the format chatName#chatId");
                 return;
             }
         }
-
+    
         // making sure the user has rights to access the chat
         super.sendReq(CommandType.NAV_CHAT);
-
-        String[] parts = chatToSend.split("#");
+        
+        String[] parts = chatToSend.split("#", 2);
         if (parts.length != 2) {
             System.out.println("Invalid input! Please use the format chatName#chatId");
             return;
         }
-
+    
         String chatId = parts[1];
         super.sendJsonReq(chatId);
         res = catchCommandRes();
@@ -116,86 +116,120 @@ public class ChatService extends Service {
             Console.clear();
             System.out.println("Connected successfully...");
             System.out.println(super.newLine() + "- - - " + chatToSend + " - - -");
-
+    
             // thread which displays the up-to-date messages of a certain chat
-            new ChatMessagesDisplayService(socket, Integer.parseInt(chatToSend.split("#")[1]), chatToSend, super.eventListener).start();
+            new ChatMessagesDisplayService(socket, Integer.parseInt(chatId), chatToSend, super.eventListener).start();
             ChatMessagesDisplayService.startDisplay();
-            
+    
             String tmp;
             do {
+                // add small delay to avoid congestion
                 delay();
-                /*
-                 * get the user text message in loop.
-                 * commands starting with "/" CAN be used as commands
-                 * and, as such, should not be sent as text messages to the server.
-                 * the message should not be "trimmed", cause the user
-                 * can decide completely, BUT a message
-                 * containing only spaces is not allowed
-                 */
+
+                // get and print the user msg OR command
                 tmp = super.keyboard.nextLine();
 
-                if (tmp == null || tmp.trim().equals("")) continue;
+                // if message is null or empty, just ignore it
+                if (tmp == null || tmp.trim().isEmpty()) continue;
                 
-                // case: "/help"
-                if (tmp.equals("/help")) {
-                    System.out.println("/back --> go back to menu");
-                    System.out.println("/remove #messageId --> delete a message");
-                    System.out.println("/update #messageId --> update the content of a message");
-                    continue;
-                }
-
-                // case "/back" --> do nothing and just exit this chat loop
-                if (tmp.equals("/back"))
-                    break;
-
-                // case: "/remove #messageId"
-                if (tmp.startsWith("/remove")) {
-                    /*
-                     * tmp.split(" #")[1] --> get message id from the user
-                     * which is after the " #"
-                     */
-                    parts = tmp.split(" #");
-
-                    if (parts.length != 2) {
-                        System.out.println("Invalid input! Please use the format /remove #messageId");
-                        continue;
-                    }
-
-                    String msgId = parts[1];
-
-                    super.sendReq(CommandType.RM_MSG);
-
-                    // send JsonMessage with (chatId, id)
-                    super.sendJsonReq(new JsonMessage(Integer.parseInt(chatId), Integer.parseInt(msgId)));
-                    res = super.catchCommandRes();
-
-                    if (!super.isSuccess(res)) System.out.println("Error: "  + res.getDescription());
-                    
-                    continue;
-                }
-
-                // case: send text message
-                super.sendReq(CommandType.SEND_MSG);
-
-                // send JsonMessage with (chatId, content)
-                super.sendJsonReq(new JsonMessage(Integer.parseInt(chatId), tmp));
-                res = super.catchCommandRes();
-
-                // catch res message
-                JsonMessage msg = super.catchJsonRes(JsonMessage.class);
-                eventListener.addMessage(msg);
-
-                // print the message id
-                System.out.print("[#" + msg.getId() + "]" + super.newLine() + super.newLine());
-
-                if (!super.isSuccess(res)) System.out.println(super.newLine() + "Error " + res.getDescription());
+                // if 
+                processCommand(tmp, chatId);
             } while (!tmp.equals("/back"));
+            
             Console.clear();
         } else {
             System.out.println("Error: " + res.getDescription());
         }
-
+    
         ChatMessagesDisplayService.stopDisplay();
+    }
+
+    private void processCommand(String command, String chatId) throws IOException, InterruptedException {
+        if (command.equals("/back")) return; // do nothing
+
+        // case: /help newContent
+        if (command.equals("/help")) {
+            displayHelp();
+            return;
+        }
+    
+        // case: /remove #messageId
+        if (command.startsWith("/remove")) {
+            handleRemoveCommand(command, chatId);
+            return;
+        }
+    
+        // case: /update #messageId: newContent
+        if (command.startsWith("/update")) {
+            handleUpdateCommand(command, chatId);
+            return;
+        }
+    
+        // default case: send a text message
+        sendMessage(command, chatId);
+    }
+
+    private void displayHelp() {
+        System.out.println("/back --> go back to menu");
+        System.out.println("/remove #messageId --> delete a message");
+        System.out.println("/update #messageId --> update the content of a message" + super.newLine());
+    }
+
+    private void handleRemoveCommand(String command, String chatId) throws IOException, InterruptedException {
+        String[] parts = command.split(" #");
+        if (parts.length != 2) {
+            System.out.println("Invalid input! Please use the format /remove #messageId");
+            return;
+        }
+    
+        String msgId = parts[1];
+        super.sendReq(CommandType.RM_MSG);
+        super.sendJsonReq(new JsonMessage(Integer.parseInt(chatId), Integer.parseInt(msgId)));
+        res = super.catchCommandRes();
+    
+        if (!super.isSuccess(res)) {
+            System.out.println("Error: " + res.getDescription());
+        }
+    }
+    
+    private void handleUpdateCommand(String command, String chatId) throws IOException, InterruptedException {
+        String[] parts = command.split(" #");
+        if (parts.length != 2) {
+            System.out.println("Invalid input! Please use the format /update #messageId: message");
+            return;
+        }
+    
+        String[] newParts = parts[1].split(": ", 2);
+        if (newParts.length != 2) {
+            System.out.println("Invalid input! Please use the format /update #messageId: message");
+            return;
+        }
+    
+        String msgId = newParts[0];
+        String newContent = newParts[1];
+    
+        super.sendReq(CommandType.UPD_MSG);
+        super.sendJsonReq(new JsonMessage(Integer.parseInt(chatId), Integer.parseInt(msgId), newContent));
+        res = super.catchCommandRes();
+    
+        if (!super.isSuccess(res)) {
+            System.out.println("Error: " + res.getDescription());
+        }
+    }
+    
+    private void sendMessage(String message, String chatId) throws IOException, InterruptedException {
+        super.sendReq(CommandType.SEND_MSG);
+        super.sendJsonReq(new JsonMessage(Integer.parseInt(chatId), message));
+        res = super.catchCommandRes();
+    
+        JsonMessage msg = super.catchJsonRes(JsonMessage.class);
+        eventListener.addMessage(msg);
+    
+        System.out.print("[#" + msg.getId() + "]" + super.newLine() + super.newLine());
+    
+        if (!super.isSuccess(res)) {
+            System.out.println(super.newLine() + "Error " + res.getDescription());
+        }
     }
 
     private void delay() throws InterruptedException {
