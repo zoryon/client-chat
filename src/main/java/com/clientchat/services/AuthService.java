@@ -66,7 +66,6 @@ public class AuthService extends Service {
             }
 
             // closing resources on connection closed
-            super.keyboard.close();
             super.out.close();
             super.in.close();
         } catch (IOException e) {

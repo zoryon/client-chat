@@ -11,23 +11,31 @@ import com.clientchat.protocol.JsonMessage;
 
 public class ChatMessagesDisplayService extends Thread {
     // attributes
-    private ArrayList<JsonMessage> messagesCache;
-    private EventListenerService eventListener;
+    private int lastDisplayedMessageId;
+    private String chatToSend;
     private int chatId;
+    private EventListenerService eventListener;
+    private ArrayList<JsonMessage> messagesCache;
     private static volatile boolean isActive;
 
     // constructors
-    public ChatMessagesDisplayService(Socket socket, int chatId, EventListenerService eventListener) throws IOException {
+    public ChatMessagesDisplayService(Socket socket, int chatId, String chatToSend, EventListenerService eventListener) throws IOException {
+        lastDisplayedMessageId = -1;
+        this.chatToSend = chatToSend;
         this.chatId = chatId;
         this.eventListener = eventListener;
+
+        // before initializing the messages cache, the init of both the event listener and chat id is needed
         this.messagesCache = new ArrayList<>(eventListener.getChatMessages(chatId));
-        
+
+        // display is up only when needed
         ChatMessagesDisplayService.isActive = false;
     }
 
     // main body --> runned fn when thread starts
     @Override
     public void run() {
+        // on successful connection
         displayAllChatMessages();
         
         // continuously check for new messages until the user leaves the chat
@@ -42,14 +50,19 @@ public class ChatMessagesDisplayService extends Thread {
                 switch (command) {
                     case SEND_MSG:
                         JsonMessage msg = messagesCache.get(messagesCache.size() - 1);
-                        System.out.println("[" + msg.getSenderName() + "]: " + msg.getContent());
+
+                        if (!hasSameIdAsLastMessageDisplayed(msg)) {
+                            System.out.println("[" + msg.getSenderName() + "]: " + msg.getContent());
+                        }
                         break;
                     case RM_MSG:
                         Console.clear();
+
+                        // display again the whole chat
+                        displayTitle();
                         displayAllChatMessages();
                         break;
                     default:
-                        break;
                 }
 
                 // set eventListener.hasUpdated to false
@@ -74,11 +87,26 @@ public class ChatMessagesDisplayService extends Thread {
     // private methods --> can only be seen inside this class
     private void displayAllChatMessages() {
         for (JsonMessage msg : messagesCache) {
-            if (msg.getSenderName().equals(AuthManager.getInstance().getUsername())) {
-                System.out.println(msg.getContent());
-            } else {
-                System.out.println("[" + msg.getSenderName() + "]: " + msg.getContent());
+            if (!hasSameIdAsLastMessageDisplayed(msg)) {
+                if (msg.getSenderName().equals(AuthManager.getInstance().getUsername())) {
+                    System.out.println(msg.getContent());
+                    System.out.println("[#" + msg.getId() + "]" + "\n\n");
+                } else {
+                    System.out.println("[" + msg.getSenderName() + "]: " + msg.getContent());
+                }
             }
         }
+    }
+
+    private boolean hasSameIdAsLastMessageDisplayed(JsonMessage msg) {
+        boolean hasSameId = msg.getId() == lastDisplayedMessageId;
+
+        if (!hasSameId) lastDisplayedMessageId = msg.getId();
+
+        return hasSameId;
+    }
+
+    private void displayTitle() {
+        System.out.println("- - - " + chatToSend + " - - -");
     }
 }

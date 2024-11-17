@@ -115,11 +115,12 @@ public class ChatService extends Service {
         if (super.isSuccess(res)) {
             Console.clear();
             System.out.println("Connected successfully...");
-            System.out.println("- - - " + chatToSend + " - - -");
+            System.out.println(super.newLine() + "- - - " + chatToSend + " - - -");
 
             // thread which displays the up-to-date messages of a certain chat
-            new ChatMessagesDisplayService(socket, Integer.parseInt(chatToSend.split("#")[1]), super.eventListener).start();
+            new ChatMessagesDisplayService(socket, Integer.parseInt(chatToSend.split("#")[1]), chatToSend, super.eventListener).start();
             ChatMessagesDisplayService.startDisplay();
+            
             String tmp;
             do {
                 delay();
@@ -139,6 +140,7 @@ public class ChatService extends Service {
                 if (tmp.equals("/help")) {
                     System.out.println("/back --> go back to menu");
                     System.out.println("/remove #messageId --> delete a message");
+                    System.out.println("/update #messageId --> update the content of a message");
                     continue;
                 }
 
@@ -183,7 +185,10 @@ public class ChatService extends Service {
                 JsonMessage msg = super.catchJsonRes(JsonMessage.class);
                 eventListener.addMessage(msg);
 
-                if (!super.isSuccess(res)) System.out.println("Error " + res.getDescription());
+                // print the message id
+                System.out.print("[#" + msg.getId() + "]" + super.newLine() + super.newLine());
+
+                if (!super.isSuccess(res)) System.out.println(super.newLine() + "Error " + res.getDescription());
             } while (!tmp.equals("/back"));
             Console.clear();
         } else {
