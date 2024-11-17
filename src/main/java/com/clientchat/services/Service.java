@@ -48,6 +48,10 @@ public class Service {
         return System.lineSeparator(); // lineSeparator --> "\n"
     }
 
+    protected String space() {
+        return " "; // space character
+    }
+
     protected synchronized String catchRes() throws InterruptedException {
         return eventListener.getDataQueue().take(); // wait for a socket stream input
     }

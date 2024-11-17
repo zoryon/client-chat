@@ -176,7 +176,7 @@ public class ChatService extends Service {
     }
 
     private void handleRemoveCommand(String command, String chatId) throws IOException, InterruptedException {
-        String[] parts = command.split(" #");
+        String[] parts = command.split("#");
         if (parts.length != 2) {
             System.out.println("Invalid input! Please use the format /remove #messageId");
             return;
@@ -193,13 +193,13 @@ public class ChatService extends Service {
     }
     
     private void handleUpdateCommand(String command, String chatId) throws IOException, InterruptedException {
-        String[] parts = command.split(" #");
+        String[] parts = command.split("#");
         if (parts.length != 2) {
             System.out.println("Invalid input! Please use the format /update #messageId: message");
             return;
         }
     
-        String[] newParts = parts[1].split(": ", 2);
+        String[] newParts = parts[1].split(":" + super.space(), 2);
         if (newParts.length != 2) {
             System.out.println("Invalid input! Please use the format /update #messageId: message");
             return;
