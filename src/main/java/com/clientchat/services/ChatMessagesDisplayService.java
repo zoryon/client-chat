@@ -84,7 +84,10 @@ public class ChatMessagesDisplayService extends Thread {
     }
 
     // private methods --> can only be seen inside this class
-    private void reloadChat() {
+    public void reloadChat() {
+        messagesCache = eventListener.getChatMessages(chatId);
+        lastDisplayedMessageId = -1;
+
         Console.clear();
         displayTitle();
         displayAllChatMessages();

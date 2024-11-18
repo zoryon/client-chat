@@ -18,7 +18,6 @@ public class EventListenerService extends Thread {
     private final BlockingQueue<CommandType> commandQueue;
     private final BlockingQueue<String> dataQueue;
     private ArrayList<JsonChat> chatList;
-    
     private CommandType updateType;
 
     // constructors
@@ -71,13 +70,16 @@ public class EventListenerService extends Thread {
                         notifyUpdate(commandQueue.take());
                         break;
                     case RM_MSG:
-                        int msgId = Integer.parseInt(new Gson().fromJson(in.readLine(), String.class));
+                        JsonMessage rmvdMsg = new Gson().fromJson(in.readLine(), JsonMessage.class);
                         
                         for (JsonChat chat : chatList) {
-                            ArrayList<JsonMessage> chatMessages = chat.getMessages();
-                            for (int i = 0; i < chatMessages.size(); i++) {
-                                if (chatMessages.get(i).getId() == msgId) {
-                                    chat.getMessages().remove(i);
+                            if (chat.getId() == rmvdMsg.getChatId()) {
+                                ArrayList<JsonMessage> chatMessages = chat.getMessages();
+                                for (int i = 0; i < chatMessages.size(); i++) {
+                                    if (chatMessages.get(i).getId() == rmvdMsg.getId()) {
+                                        chat.getMessages().remove(i);
+                                        break;
+                                    }
                                 }
                             }
                         }
@@ -88,10 +90,13 @@ public class EventListenerService extends Thread {
                         JsonMessage updtdMsg = new Gson().fromJson(in.readLine(), JsonMessage.class);
                             
                         for (JsonChat chat : chatList) {
-                            ArrayList<JsonMessage> chatMessages = chat.getMessages();
-                            for (int i = 0; i < chatMessages.size(); i++) {
-                                if (chatMessages.get(i).getId() == updtdMsg.getId()) {
-                                    chat.getMessages().get(i).setContent(updtdMsg.getContent());
+                            if (chat.getId() == updtdMsg.getChatId()) {
+                                ArrayList<JsonMessage> chatMessages = chat.getMessages();
+                                for (int i = 0; i < chatMessages.size(); i++) {
+                                    if (chatMessages.get(i).getId() == updtdMsg.getId()) {
+                                        chat.getMessages().get(i).setContent(updtdMsg.getContent());
+                                        break;
+                                    }
                                 }
                             }
                         }

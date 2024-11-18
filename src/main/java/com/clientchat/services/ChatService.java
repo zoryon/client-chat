@@ -2,6 +2,8 @@ package com.clientchat.services;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
+
 import com.clientchat.lib.ActionUtils;
 import com.clientchat.lib.Character;
 import com.clientchat.lib.Console;
@@ -22,14 +24,13 @@ public class ChatService extends Service {
 
         // initialize menu
         super.initializeMenuOptions(
-            new MenuBuilder()
-                .addOption("0", "Exit", ActionUtils.wrapAction(super::handleExit))
-                .addOption("1", "View your chats", this::handleViewUserChatList)
-                .addOption("2", "Create a chat", ActionUtils.wrapAction(this::handleCreateChat))
-                .addOption("3", "Connect to a chat", ActionUtils.wrapAction(this::handleConnectToChat))
-                .addOption("4", "Manage profile", ActionUtils.wrapAction(this::handleViewProfile))
-                .build()
-        );
+                new MenuBuilder()
+                        .addOption("0", "Exit", ActionUtils.wrapAction(super::handleExit))
+                        .addOption("1", "View your chats", this::handleViewUserChatList)
+                        .addOption("2", "Create a chat", ActionUtils.wrapAction(this::handleCreateChat))
+                        .addOption("3", "Connect to a chat", ActionUtils.wrapAction(this::handleConnectToChat))
+                        .addOption("4", "Manage profile", ActionUtils.wrapAction(this::handleViewProfile))
+                        .build());
     }
 
     // only one instance can exists at a time
@@ -52,7 +53,8 @@ public class ChatService extends Service {
             choice = super.keyboard.nextLine().trim();
 
             // get the action to perform based on the user's choice
-            MenuOption selectedOption = super.menuOptions.getOrDefault(choice, new MenuOption("Unknown option", super::handleUnknownOption));
+            MenuOption selectedOption = super.menuOptions.getOrDefault(choice,
+                    new MenuOption("Unknown option", super::handleUnknownOption));
 
             Console.clear();
             // run the passed fn related to the user's choice
@@ -72,7 +74,7 @@ public class ChatService extends Service {
         if (ProfileService.getInstance(socket).run()) { // equal to "new ProfileService(socket).run()"
             Console.clear();
             choice = "0";
-        } 
+        }
     }
 
     private void handleCreateChat() throws IOException {
@@ -93,35 +95,36 @@ public class ChatService extends Service {
             // get chat identifier from user
             System.out.print(Character.NEW_LINE.getValue() + "Enter chat identifier (chatName#chatId): ");
             chatToSend = super.keyboard.nextLine().trim();
-    
+
             if (chatToSend == null || chatToSend.isEmpty() || !chatToSend.contains("#")) {
                 System.out.println("Invalid input! Please use the format chatName#chatId");
                 return;
             }
         }
-    
+
         // making sure the user has rights to access the chat
         super.sendReq(CommandType.NAV_CHAT);
-        
+
         String[] parts = chatToSend.split("#", 2);
         if (parts.length != 2) {
             System.out.println("Invalid input! Please use the format chatName#chatId");
             return;
         }
-    
+
         String chatId = parts[1];
         super.sendJsonReq(chatId);
         res = catchCommandRes();
-        
+
         if (super.isSuccess(res)) {
             Console.clear();
             System.out.println("Connected successfully...");
             System.out.println(Character.NEW_LINE.getValue() + "- - - " + chatToSend + " - - -");
-    
+
             // thread which displays the up-to-date messages of a certain chat
-            new ChatMessagesDisplayService(socket, Integer.parseInt(chatId), chatToSend, super.eventListener).start();
+            ChatMessagesDisplayService displayService = new ChatMessagesDisplayService(socket, Integer.parseInt(chatId), chatToSend, super.eventListener);
+            displayService.start();
             ChatMessagesDisplayService.startDisplay();
-    
+
             String tmp;
             do {
                 // add small delay to avoid congestion
@@ -131,41 +134,43 @@ public class ChatService extends Service {
                 tmp = super.keyboard.nextLine();
 
                 // if message is null or empty, just ignore it
-                if (tmp == null || tmp.trim().isEmpty()) continue;
-                
-                // if 
-                processCommand(tmp, chatId);
+                if (tmp == null || tmp.trim().isEmpty())
+                    continue;
+
+                // if
+                processCommand(tmp, chatId, displayService);
             } while (!tmp.equals("/back"));
-            
+
             Console.clear();
         } else {
             System.out.println("Error: " + res.getDescription());
         }
-    
+
         ChatMessagesDisplayService.stopDisplay();
     }
 
-    private void processCommand(String command, String chatId) throws IOException, InterruptedException {
-        if (command.equals("/back")) return; // do nothing
+    private void processCommand(String command, String chatId, ChatMessagesDisplayService displayService) throws IOException, InterruptedException {
+        if (command.equals("/back"))
+            return; // do nothing
 
         // case: /help newContent
         if (command.equals("/help")) {
             displayHelp();
             return;
         }
-    
+
         // case: /remove #messageId
         if (command.startsWith("/remove")) {
-            handleRemoveCommand(command, chatId);
+            handleRemoveCommand(command, chatId, displayService);
             return;
         }
-    
+
         // case: /update #messageId: newContent
         if (command.startsWith("/update")) {
-            handleUpdateCommand(command, chatId);
+            handleUpdateCommand(command, chatId, displayService);
             return;
         }
-    
+
         // default case: send a text message
         sendMessage(command, chatId);
     }
@@ -176,24 +181,44 @@ public class ChatService extends Service {
         System.out.println("/update #messageId --> update the content of a message" + Character.NEW_LINE.getValue());
     }
 
-    private void handleRemoveCommand(String command, String chatId) throws IOException, InterruptedException {
+    private void handleRemoveCommand(String command, String chatId, ChatMessagesDisplayService displayService) throws IOException, InterruptedException {
         String[] parts = command.split("#");
         if (parts.length != 2) {
             System.out.println("Invalid input! Please use the format /remove #messageId");
             return;
         }
-    
+
         String msgId = parts[1];
-        super.sendReq(CommandType.RM_MSG);
-        super.sendJsonReq(new JsonMessage(Integer.parseInt(chatId), Integer.parseInt(msgId)));
-        res = super.catchCommandRes();
+        try {
+            // attempt to parse chatId and msgId as integers
+            int chatIdInt = Integer.parseInt(chatId);
+            int msgIdInt = Integer.parseInt(msgId);
+            
+            // send request
+            super.sendReq(CommandType.RM_MSG);
+            super.sendJsonReq(new JsonMessage(chatIdInt, msgIdInt));
+            res = super.catchCommandRes();
     
-        if (!super.isSuccess(res)) {
-            System.out.println("Error: " + res.getDescription());
+            // handle response
+            if (super.isSuccess(res)) {
+                ArrayList<JsonMessage> chatMessages = super.eventListener.getChatMessages(chatIdInt);
+                for (int i = 0; i < chatMessages.size(); i++) {
+                    if (chatMessages.get(i).getId() == msgIdInt) {
+                        chatMessages.remove(i);
+                        break;
+                    }
+                }
+
+                displayService.reloadChat();
+            } else {
+                System.out.println("Error: " + res.getDescription());
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Error: Invalid number format. Please ensure that chatId and messageId are numeric.");
         }
     }
-    
-    private void handleUpdateCommand(String command, String chatId) throws IOException, InterruptedException {
+
+    private void handleUpdateCommand(String command, String chatId, ChatMessagesDisplayService displayService) throws IOException, InterruptedException {
         String[] parts = command.split("#");
         if (parts.length != 2) {
             System.out.println("Invalid input! Please use the format /update #messageId: message");
@@ -209,25 +234,42 @@ public class ChatService extends Service {
         String msgId = newParts[0];
         String newContent = newParts[1];
     
-        super.sendReq(CommandType.UPD_MSG);
-        super.sendJsonReq(new JsonMessage(Integer.parseInt(chatId), Integer.parseInt(msgId), newContent));
-        res = super.catchCommandRes();
+        try {
+            // Attempt to parse chatId and msgId as integers
+            int chatIdInt = Integer.parseInt(chatId);
+            int msgIdInt = Integer.parseInt(msgId);
     
-        if (!super.isSuccess(res)) {
-            System.out.println("Error: " + res.getDescription());
+            super.sendReq(CommandType.UPD_MSG);
+            super.sendJsonReq(new JsonMessage(chatIdInt, msgIdInt, newContent));
+            res = super.catchCommandRes();
+    
+            if (super.isSuccess(res)) {
+                ArrayList<JsonMessage> chatMessages = super.eventListener.getChatMessages(chatIdInt);
+                for (int i = 0; i < chatMessages.size(); i++) {
+                    if (chatMessages.get(i).getId() == msgIdInt) {
+                        chatMessages.get(i).setContent(newContent);
+                        break;
+                    }
+                }
+                displayService.reloadChat();
+            } else {
+                System.out.println("Error: " + res.getDescription());
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Error: Invalid number format. Please ensure that chatId and messageId are numeric.");
         }
     }
-    
+
     private void sendMessage(String message, String chatId) throws IOException, InterruptedException {
         super.sendReq(CommandType.SEND_MSG);
         super.sendJsonReq(new JsonMessage(Integer.parseInt(chatId), message));
         res = super.catchCommandRes();
-    
+
         JsonMessage msg = super.catchJsonRes(JsonMessage.class);
         eventListener.addMessage(msg);
-    
+
         System.out.print("[#" + msg.getId() + "]" + Character.NEW_LINE.getValue() + Character.NEW_LINE.getValue());
-    
+
         if (!super.isSuccess(res)) {
             System.out.println(Character.NEW_LINE.getValue() + "Error " + res.getDescription());
         }
