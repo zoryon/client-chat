@@ -81,6 +81,7 @@ public class EventListenerService extends Thread {
                                         break;
                                     }
                                 }
+                                break;
                             }
                         }
 
@@ -98,6 +99,7 @@ public class EventListenerService extends Thread {
                                         break;
                                     }
                                 }
+                                break;
                             }
                         }
 

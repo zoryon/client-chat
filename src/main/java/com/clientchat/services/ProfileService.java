@@ -89,7 +89,7 @@ public class ProfileService extends Service {
         if (super.isSuccess(res)) {
             /*
              * set choice to "0" to leave this loop, without exiting the app.
-             * this send the user to the auth menu
+             * this sends the user to the auth menu
              */
             AuthManager.getInstance().logout();
             return true;

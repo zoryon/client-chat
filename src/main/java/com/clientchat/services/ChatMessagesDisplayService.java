@@ -13,7 +13,6 @@ public class ChatMessagesDisplayService extends Thread {
     // attributes
     private int lastDisplayedMessageId;
     private String chatToSend;
-    private int chatId;
     private EventListenerService eventListener;
     private ArrayList<JsonMessage> messagesCache;
     private static volatile boolean isActive;
@@ -22,11 +21,10 @@ public class ChatMessagesDisplayService extends Thread {
     public ChatMessagesDisplayService(Socket socket, int chatId, String chatToSend, EventListenerService eventListener) throws IOException {
         lastDisplayedMessageId = -1;
         this.chatToSend = chatToSend;
-        this.chatId = chatId;
         this.eventListener = eventListener;
 
         // before initializing the messages cache, the init of both the event listener and chat id is needed
-        this.messagesCache = new ArrayList<>(eventListener.getChatMessages(chatId));
+        this.messagesCache = eventListener.getChatMessages(chatId);
 
         // display is up only when needed
         ChatMessagesDisplayService.isActive = false;
@@ -43,9 +41,6 @@ public class ChatMessagesDisplayService extends Thread {
             try {
                 CommandType command = eventListener.getUpdateType();
                 if (command == null) continue;
-
-                messagesCache = eventListener.getChatMessages(chatId);
-                if (messagesCache.isEmpty()) continue;
 
                 switch (command) {
                     case SEND_MSG:
@@ -84,8 +79,7 @@ public class ChatMessagesDisplayService extends Thread {
     }
 
     // private methods --> can only be seen inside this class
-    public void reloadChat() {
-        messagesCache = eventListener.getChatMessages(chatId);
+    public void reloadChat() throws InterruptedException {
         lastDisplayedMessageId = -1;
 
         Console.clear();
