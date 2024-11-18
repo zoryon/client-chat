@@ -77,9 +77,12 @@ public class CreateChatService extends Service {
         if (super.isSuccess(res)) {
             String chatTmp = catchJsonRes(String.class);
 
-            // [0] is the chat name
-            // [1] is the actual chatId
-            String[] chatId = chatTmp.split("#");
+            /*
+             * [0] is the chat name
+             * [1] is the actual chatId
+             */
+            String[] chatId = splitAndValidate(chatTmp, "#", 2);
+            if (chatId == null) return;
 
             JsonChat newChat = new JsonChat(Integer.parseInt(chatId[1]), chatId[0]);
             super.eventListener.addChat(newChat);
@@ -120,7 +123,8 @@ public class CreateChatService extends Service {
 
             // [0] is the chat name
             // [1] is the actual chatId
-            String[] chatId = groupTmp.split("#");
+            String[] chatId = splitAndValidate(groupTmp, "#", 2);
+            if (chatId == null) return;
 
             JsonChat newChat = new JsonChat(Integer.parseInt(chatId[1]), chatId[0]);
             super.eventListener.addChat(newChat);
@@ -134,6 +138,17 @@ public class CreateChatService extends Service {
         } else {
             System.out.println("Error: " + res.getDescription());
         }
+    }
+
+    private String[] splitAndValidate(String toSplit, String pattern, int partsNum) {
+        String[] ans = toSplit.split(pattern);
+
+        if (ans.length != partsNum) {
+            System.out.println("Error: " + CommandType.ERR_WRONG_DATA);
+            return null;
+        }
+
+        return ans;
     }
 
     private void handleBack() throws IOException {

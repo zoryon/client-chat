@@ -1,5 +1,6 @@
 package com.clientchat.services;
 
+import com.clientchat.lib.Character;
 import com.clientchat.lib.Console;
 import com.clientchat.lib.MenuOption;
 import com.clientchat.protocol.CommandType;
@@ -24,11 +25,14 @@ public class Service {
     protected EventListenerService eventListener;
 
     /*
-     * Basically an ArrayList,
-     * BUT, instead of an index, MAP
-     * binds a KEY to an object.
-     * In this case we bind the menu's number (0, 1, 2, 3) in STRING FORMAT
-     * to it's related MenuOption
+     * map is an interface.
+     * we are using it to get the HasMap structure.
+     * HashMap are similar to ArrayLists,
+     * BUT, instead of an index, it
+     * binds a KEY (of generic type) to an object (of generic type).
+     * in this case we bind the menu's number (0, 1, 2, 3..) of type STRING
+     * to it's related MenuOption 
+     * (which contains the function to use and its own description)
      */
     protected Map<String, MenuOption> menuOptions;
 
@@ -44,14 +48,6 @@ public class Service {
     }
 
     // protected methods --> can only be seen inside services package
-    protected String newLine() {
-        return System.lineSeparator(); // lineSeparator --> "\n"
-    }
-
-    protected String space() {
-        return " "; // space character
-    }
-
     protected synchronized String catchRes() throws InterruptedException {
         return eventListener.getDataQueue().take(); // wait for a socket stream input
     }
@@ -77,12 +73,12 @@ public class Service {
 
     protected void sendReq(CommandType req) throws IOException {
         // send the String request in the socket output stream
-        out.writeBytes(req.toString() + newLine());
+        out.writeBytes(req.toString() + Character.NEW_LINE.getValue());
     }
 
     protected void sendJsonReq(Object req) throws IOException {
         // send the Object to socket output stream in JSON FORMAT
-        out.writeBytes(gson.toJson(req) + newLine());
+        out.writeBytes(gson.toJson(req) + Character.NEW_LINE.getValue());
     }
 
     protected void sendRes(CommandType res) throws IOException {

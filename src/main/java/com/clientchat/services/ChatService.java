@@ -3,6 +3,7 @@ package com.clientchat.services;
 import java.io.IOException;
 import java.net.Socket;
 import com.clientchat.lib.ActionUtils;
+import com.clientchat.lib.Character;
 import com.clientchat.lib.Console;
 import com.clientchat.lib.MenuBuilder;
 import com.clientchat.lib.MenuOption;
@@ -45,7 +46,7 @@ public class ChatService extends Service {
      */
     public void run() throws IOException {
         do {
-            MenuOption.printMenu(super.newLine() + "- - - MENU - - -", super.menuOptions);
+            MenuOption.printMenu(Character.NEW_LINE.getValue() + "- - - MENU - - -", super.menuOptions);
 
             // get the choice from the user
             choice = super.keyboard.nextLine().trim();
@@ -90,7 +91,7 @@ public class ChatService extends Service {
     protected void handleConnectToChat(String chatToSend) throws IOException, InterruptedException {
         if (chatToSend == null || chatToSend.trim().isEmpty() || !chatToSend.contains("#")) {
             // get chat identifier from user
-            System.out.print(super.newLine() + "Enter chat identifier (chatName#chatId): ");
+            System.out.print(Character.NEW_LINE.getValue() + "Enter chat identifier (chatName#chatId): ");
             chatToSend = super.keyboard.nextLine().trim();
     
             if (chatToSend == null || chatToSend.isEmpty() || !chatToSend.contains("#")) {
@@ -115,7 +116,7 @@ public class ChatService extends Service {
         if (super.isSuccess(res)) {
             Console.clear();
             System.out.println("Connected successfully...");
-            System.out.println(super.newLine() + "- - - " + chatToSend + " - - -");
+            System.out.println(Character.NEW_LINE.getValue() + "- - - " + chatToSend + " - - -");
     
             // thread which displays the up-to-date messages of a certain chat
             new ChatMessagesDisplayService(socket, Integer.parseInt(chatId), chatToSend, super.eventListener).start();
@@ -172,7 +173,7 @@ public class ChatService extends Service {
     private void displayHelp() {
         System.out.println("/back --> go back to menu");
         System.out.println("/remove #messageId --> delete a message");
-        System.out.println("/update #messageId --> update the content of a message" + super.newLine());
+        System.out.println("/update #messageId --> update the content of a message" + Character.NEW_LINE.getValue());
     }
 
     private void handleRemoveCommand(String command, String chatId) throws IOException, InterruptedException {
@@ -199,7 +200,7 @@ public class ChatService extends Service {
             return;
         }
     
-        String[] newParts = parts[1].split(":" + super.space(), 2);
+        String[] newParts = parts[1].split(":" + Character.SPACE.getValue(), 2);
         if (newParts.length != 2) {
             System.out.println("Invalid input! Please use the format /update #messageId: message");
             return;
@@ -225,10 +226,10 @@ public class ChatService extends Service {
         JsonMessage msg = super.catchJsonRes(JsonMessage.class);
         eventListener.addMessage(msg);
     
-        System.out.print("[#" + msg.getId() + "]" + super.newLine() + super.newLine());
+        System.out.print("[#" + msg.getId() + "]" + Character.NEW_LINE.getValue() + Character.NEW_LINE.getValue());
     
         if (!super.isSuccess(res)) {
-            System.out.println(super.newLine() + "Error " + res.getDescription());
+            System.out.println(Character.NEW_LINE.getValue() + "Error " + res.getDescription());
         }
     }
 

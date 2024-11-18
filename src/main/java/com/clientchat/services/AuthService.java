@@ -2,6 +2,7 @@ package com.clientchat.services;
 
 import com.clientchat.auth.AuthManager;
 import com.clientchat.lib.ActionUtils;
+import com.clientchat.lib.Character;
 import com.clientchat.lib.Console;
 import com.clientchat.lib.MenuBuilder;
 import com.clientchat.lib.MenuOption;
@@ -26,7 +27,7 @@ public class AuthService extends Service {
         // initialize menu
         super.initializeMenuOptions(
             new MenuBuilder()
-            .addOption("0", "Exit", ActionUtils.wrapAction(super::handleExit))
+            .addOption("0", "Exit", ActionUtils.wrapAction(super::handleExit)) // super::handleExit equals to () -> handleExit()
             .addOption("1", "Sign up", ActionUtils.wrapAction(this::handleSignUp))
             .addOption("2", "Sign in", ActionUtils.wrapAction(this::handleSignIn))
             .build()
@@ -54,7 +55,7 @@ public class AuthService extends Service {
                     handleAuthenticationMenu();
                 } else {
                     // print a welcome message for the user
-                    System.out.println(super.newLine() + "Welcome, " + authManager.getUsername() + "!");
+                    System.out.println(Character.NEW_LINE.getValue() + "Welcome, " + authManager.getUsername() + "!");
 
                     /* 
                         ChatService.run() is not a thread, it simulates a main from another class.
@@ -95,7 +96,7 @@ public class AuthService extends Service {
 
         if (super.isSuccess(res)) {
             Console.clear();
-            System.out.println(newLine() + "Successfully signed up!");
+            System.out.println(Character.NEW_LINE.getValue() + "Successfully signed up!");
             System.out.println("You'll automatically be signed in");
             authManager.authenticate(user.getUsername());
         } else {
@@ -120,7 +121,7 @@ public class AuthService extends Service {
     }
 
     private JsonUser getCredentialsFromUser() {
-        System.out.print(super.newLine() + "Enter username: ");
+        System.out.print(Character.NEW_LINE.getValue() + "Enter username: ");
         String username = super.keyboard.nextLine().trim();
 
         System.out.print("Enter password: ");

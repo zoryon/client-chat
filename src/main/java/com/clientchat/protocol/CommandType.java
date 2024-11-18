@@ -38,12 +38,15 @@ public enum CommandType {
     ERR_DISCONNECT("Client has disconnected"),
     ERR_WRONG_DATA("The data entered is incorrect");
 
+    // attributes
     private final String description;
 
-    CommandType(String description) {
+    // constructors
+    private CommandType(String description) {
         this.description = description;
     }
 
+    // getters
     public String getDescription() {
         return description;
     }
