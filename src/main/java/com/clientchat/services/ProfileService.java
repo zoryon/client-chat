@@ -56,6 +56,7 @@ public class ProfileService extends Service {
 
             // manage logout
             if (choice.equals("3")) return handleLogout();
+            if (choice.equals("4")) return handleDeleteUser();
 
             // run the passed fn related to the user's choice
             selectedOption.getAction().run();
@@ -108,14 +109,16 @@ public class ProfileService extends Service {
         choice = "0";
     }
 
-    private void handleDeleteUser() throws IOException, InterruptedException {
+    private boolean handleDeleteUser() throws IOException, InterruptedException {
         res = reqWithSecurityConfirmation(CommandType.DEL_USER, null);
         if (super.isSuccess(res)) {
             AuthManager.getInstance().logout();
             choice = "0";
-        } else {
-            System.out.println("Error: " + res.getDescription());
+            return true;
         }
+
+        System.out.println("Error: " + res.getDescription());
+        return false;
     }
 
     /*
@@ -135,8 +138,14 @@ public class ProfileService extends Service {
         System.out.print("To confirm this action, enter your password: ");
         String password = super.keyboard.nextLine().trim();
 
+        JsonUser tmp;
         // send json password
-        super.sendJsonReq(new JsonUser(toSend.toString(), password));
+        if (toSend == null) {
+            tmp = new JsonUser(AuthManager.getInstance().getUsername(), password);
+        } else {
+            tmp = new JsonUser(toSend.toString(), password);
+        }
+        super.sendJsonReq(tmp);
 
         // get and the return the response
         return super.catchCommandRes();

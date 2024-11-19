@@ -3,7 +3,6 @@ package com.clientchat.services;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
-
 import com.clientchat.lib.ActionUtils;
 import com.clientchat.lib.Character;
 import com.clientchat.lib.Console;
