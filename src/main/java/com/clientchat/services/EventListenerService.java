@@ -123,11 +123,11 @@ public class EventListenerService extends Thread {
     // public methods
     public void printUserChatList() {
         for (JsonChat chat : chatList) {
-            System.out.println("[" + chat.getChatName() + "#" + chat.getId() + "]");
+            System.out.println("> " + chat.getChatName() + "#" + chat.getId());
         }
 
         if (chatList.isEmpty()) {
-            System.out.println("[Nessuna chat presente..]");
+            System.out.println("> Nessuna chat presente..");
         }
     }
 

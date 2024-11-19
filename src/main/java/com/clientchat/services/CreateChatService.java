@@ -109,7 +109,7 @@ public class CreateChatService extends Service {
         System.out.println("Enter username (/stop to continue): ");
         String tmp;
         do {
-            System.out.print(": ");
+            System.out.print("> ");
             tmp = super.keyboard.nextLine().trim();
             if (!tmp.equals("/stop")) usernameList.add(tmp);
         } while (!tmp.equals("/stop"));
