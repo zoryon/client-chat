@@ -77,7 +77,7 @@ On the **server** side:
 | NEW_CHAT       | Initiate a new private chat                                |
 | NEW_GROUP      | Create a new group                                         |
 | NAV_CHAT       | Navigate to specified chat or group                        |
-x
+
 ##  Messages Management Commands
 | Command Code   | Description                                                |
 |----------------|------------------------------------------------------------|
