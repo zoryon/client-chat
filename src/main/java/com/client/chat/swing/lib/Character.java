@@ -3,7 +3,8 @@ package com.client.chat.swing.lib;
 public enum Character {
     NEW_LINE(System.lineSeparator()),
     SPACE(" "),
-    HASHTAG("#");
+    HASHTAG("#"),
+    HYPHEN("-");
 
     // attributes
     private final String value;

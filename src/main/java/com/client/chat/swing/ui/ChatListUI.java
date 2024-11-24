@@ -2,6 +2,7 @@ package com.client.chat.swing.ui;
 
 import com.client.chat.swing.auth.AuthManager;
 import com.client.chat.swing.controllers.CreateChatController;
+import com.client.chat.swing.lib.Character;
 import com.client.chat.swing.protocol.CustomColors;
 import com.client.chat.swing.protocol.JsonChat;
 import javax.swing.*;
@@ -234,8 +235,8 @@ public class ChatListUI extends JPanel {
             setOpaque(false);
             setBackground(CustomColors.BACKGROUND.getColor());
 
-            // Contact name - Increased size
-            JLabel nameLabel = new JLabel(chat.getChatName());
+            // Contact name
+            JLabel nameLabel = new JLabel(chat != null ? calculateContactName(chat.getChatName()) : "Chat");
             nameLabel.setFont(new Font("Arial", Font.BOLD, 18)); // Increased from 16 to 18
             nameLabel.setForeground(CustomColors.MAIN_FOREGROUND.getColor());
 
@@ -281,6 +282,30 @@ public class ChatListUI extends JPanel {
                     }
                 }
             });
+        }
+
+        public String calculateContactName(String chatName) {
+            if (chatName == null || chatName.isEmpty()) {
+                return "Chat";
+            }
+
+            if (!chatName.contains(Character.HYPHEN.getValue())) {
+                return chatName;
+            }
+
+            try {
+                String[] parts = chatName.split(Character.HYPHEN.getValue());
+
+                // ensure the split produces at least two parts
+                if (parts.length < 2) {
+                    return chatName;
+                }
+
+                return parts[1].equals(AuthManager.getInstance().getUsername()) ? parts[0] : parts[1];
+            } catch (Exception ex) {
+                System.err.println("Error while parsing chat name: " + ex.getMessage());
+                return chatName;
+            }
         }
 
         @Override

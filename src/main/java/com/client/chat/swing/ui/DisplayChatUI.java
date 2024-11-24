@@ -5,6 +5,7 @@ import com.client.chat.swing.controllers.DisplayChatController;
 import com.client.chat.swing.protocol.CustomColors;
 import com.client.chat.swing.protocol.JsonChat;
 import com.client.chat.swing.protocol.JsonMessage;
+import com.client.chat.swing.lib.Character;
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
@@ -74,7 +75,8 @@ public class DisplayChatUI extends JPanel {
         Border emptyBorder = BorderFactory.createEmptyBorder(5, 15, 5, 15);
         chatHeaderPanel.setBorder(BorderFactory.createCompoundBorder(matteBorder, emptyBorder));
 
-        JLabel chatNameLabel = new JLabel(chat != null ? chat.getChatName() : "Chat");
+        // Contact name
+        JLabel chatNameLabel = new JLabel(chat != null ? calculateContactName(chat.getChatName()) : "Chat");
         chatNameLabel.setFont(new Font("Arial", Font.BOLD, 18));
         chatNameLabel.setForeground(CustomColors.MAIN_FOREGROUND.getColor());
 
@@ -134,9 +136,8 @@ public class DisplayChatUI extends JPanel {
         messageArea.setWrapStyleWord(true); // Mantieni le parole intere
         messageArea.setEditable(false); // Il testo non è editabile
         messageArea.setBackground(isSentByCurrentUser
-            ? CustomColors.TEXT_BUBBLE_BACKGROUND_OWNER.getColor()
-            : CustomColors.TEXT_BUBBLE_BACKGROUND_OTHERS.getColor()
-        );
+                ? CustomColors.TEXT_BUBBLE_BACKGROUND_OWNER.getColor()
+                : CustomColors.TEXT_BUBBLE_BACKGROUND_OTHERS.getColor());
         messageArea.setFont(new Font("Arial", Font.PLAIN, 16)); // Imposta la stessa font
         messageArea.setForeground(CustomColors.MAIN_FOREGROUND.getColor());
         messageArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -224,11 +225,14 @@ public class DisplayChatUI extends JPanel {
     }
 
     public static void addMessage(JsonMessage newMessage) {
-        if (DisplayChatUI.chat == null) return;
+        if (DisplayChatUI.chat == null)
+            return;
 
-        if (DisplayChatUI.chat.getId() != newMessage.getChatId()) return;
-        
-        if (chatMessageContainer == null || newMessage == null) return;
+        if (DisplayChatUI.chat.getId() != newMessage.getChatId())
+            return;
+
+        if (chatMessageContainer == null || newMessage == null)
+            return;
 
         boolean isSentByCurrentUser = newMessage.getSenderName().equals(AuthManager.getInstance().getUsername());
         JPanel messageBubble = createMessageBubble(chat, newMessage, isSentByCurrentUser);
@@ -335,6 +339,30 @@ public class DisplayChatUI extends JPanel {
         // Ricalcola e ridisegna il layout
         chatMessageContainer.revalidate();
         chatMessageContainer.repaint();
+    }
+
+    public String calculateContactName(String chatName) {
+        if (chatName == null || chatName.isEmpty()) {
+            return "Chat";
+        }
+
+        if (!chatName.contains(Character.HYPHEN.getValue())) {
+            return chatName;
+        }
+
+        try {
+            String[] parts = chatName.split(Character.HYPHEN.getValue());
+
+            // ensure the split produces at least two parts
+            if (parts.length < 2) {
+                return chatName;
+            }
+
+            return parts[1].equals(AuthManager.getInstance().getUsername()) ? parts[0] : parts[1];
+        } catch (Exception ex) {
+            System.err.println("Error while parsing chat name: " + ex.getMessage());
+            return chatName;
+        }
     }
 
     private void addResizeListener() {
