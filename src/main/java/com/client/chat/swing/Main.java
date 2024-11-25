@@ -15,7 +15,7 @@ public class Main {
     public static void main(String[] args) {
         try {
             // LAB PC's IP: 10.22.9.10
-            Main.socket = new Socket("localhost", 4000);
+            Main.socket = new Socket("localhost", 3000);
 
             /* Create and display the form */
             new AuthController(new AuthUI());

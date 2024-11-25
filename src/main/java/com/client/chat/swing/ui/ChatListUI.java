@@ -247,7 +247,7 @@ public class ChatListUI extends JPanel {
             if (chat.getMessages().isEmpty()) {
                 messagePreview = new JLabel("...");
             } else {
-                String message = chat.getMessages().getLast().getContent();
+                String message = chat.getMessages().get(chat.getMessages().size() - 1).getContent();
                 // Truncate message to 10 characters and add ellipsis
                 message = message.length() > 30 ? message.substring(0, 30) + "..." : message;
                 messagePreview = new JLabel(message);

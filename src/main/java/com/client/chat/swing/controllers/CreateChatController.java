@@ -29,7 +29,7 @@ public class CreateChatController {
                     String groupName = ui.getChatName();
                     handleCreateNewGroup(groupName, users);
                 } else {
-                    handleCreateNewChat(users.getFirst());
+                    handleCreateNewChat(users.get(0));
                 }
             } catch (IOException | InterruptedException ex) {
                 System.out.println(ex.getMessage());
