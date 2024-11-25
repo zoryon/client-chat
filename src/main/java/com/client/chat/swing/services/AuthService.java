@@ -19,7 +19,7 @@ public class AuthService extends Service {
         super.eventListener.start();
     }
 
-    // only one instance can exist at a time
+    // singleton --> only one instance can exist at a time
     public static AuthService getInstance() throws IOException {
         if (instance == null) {
             instance = new AuthService();

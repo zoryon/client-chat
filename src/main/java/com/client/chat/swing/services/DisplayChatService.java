@@ -17,7 +17,7 @@ public class DisplayChatService extends Service {
         super();
     }
 
-    // only one instance can exist at a time
+    // singleton --> only one instance can exist at a time
     public static DisplayChatService getInstance() throws IOException {
         if (instance == null) {
             instance = new DisplayChatService();

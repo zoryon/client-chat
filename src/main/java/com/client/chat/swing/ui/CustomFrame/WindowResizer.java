@@ -5,11 +5,13 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class WindowResizer {
+    // attributes
     private final JFrame frame;
     private final int RESIZE_BORDER = 5;
     private boolean isResizing = false;
     private int resizeDirection = 0;
-    // Direction constants
+
+    // direction constants
     private static final int NONE = 0;
     private static final int NW = 1;
     private static final int N = 2;
@@ -24,11 +26,13 @@ public class WindowResizer {
     private Point startLocation;
     private Dimension startSize;
 
+    // constructors
     public WindowResizer(JFrame frame) {
         this.frame = frame;
         setupResizeListeners();
     }
 
+    // methods
     private void setupResizeListeners() {
         frame.addMouseListener(new MouseAdapter() {
             @Override
@@ -106,7 +110,7 @@ public class WindowResizer {
                             break;
                     }
 
-                    // Ensure minimum size
+                    // ensure minimum size
                     if (newWidth >= frame.getMinimumSize().width && 
                         newHeight >= frame.getMinimumSize().height) {
                         frame.setBounds(newX, newY, newWidth, newHeight);
@@ -127,7 +131,7 @@ public class WindowResizer {
         int width = frame.getWidth();
         int height = frame.getHeight();
 
-        // Check corners first (they take precedence)
+        // check corners first (they take precedence)
         if (x <= RESIZE_BORDER && y <= RESIZE_BORDER) {
             resizeDirection = NW;
             return true;
@@ -145,7 +149,7 @@ public class WindowResizer {
             return true;
         }
 
-        // Then check borders
+        // then check borders
         if (y <= RESIZE_BORDER) {
             resizeDirection = N;
             return true;

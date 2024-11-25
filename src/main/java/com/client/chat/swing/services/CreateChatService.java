@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class CreateChatService extends Service {
+    // attributes
     private static CreateChatService instance;
 
     // constructors
@@ -15,7 +16,7 @@ public class CreateChatService extends Service {
         super();
     }
 
-    // only one instance can exist at a time
+    // singleton --> only one instance can exist at a time
     public static CreateChatService getInstance() throws IOException {
         if (instance == null) {
             instance = new CreateChatService();

@@ -6,10 +6,12 @@ import com.client.chat.swing.protocol.CommandType;
 import com.client.chat.swing.protocol.JsonUser;
 
 public class ProfileService extends Service {
+    // constructors
     public ProfileService() throws IOException {
         super();
     }
 
+    // methods
     public boolean logout() throws IOException, InterruptedException {
         super.sendReq(CommandType.LOGOUT);
         super.res = super.catchCommandRes();

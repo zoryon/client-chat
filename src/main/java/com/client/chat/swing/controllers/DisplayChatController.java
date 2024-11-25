@@ -19,7 +19,9 @@ public class DisplayChatController {
     // attributes
     private static DisplayChatService service;
     private static DisplayChatUI ui;
-    private static boolean isMessageSending = false; // Add a flag to prevent multiple sends
+
+    // flag to prevent multiple sends
+    private static boolean isMessageSending = false;
 
     // constructors
     public DisplayChatController(DisplayChatUI ui) throws IOException {
@@ -31,12 +33,12 @@ public class DisplayChatController {
 
     @SuppressWarnings("unused")
     public static void handleAddEventListener() {
-        // Modify the send button listener to use the new method
+        // modify the send button listener to use the new method
         ui.addSendMessageListener(e -> {
             sendMessageIfNotSending();
         });
 
-        // Modify the key listener to use the new method
+        // modify the key listener to use the new method
         ui.addKeySendMessageListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -47,26 +49,26 @@ public class DisplayChatController {
         });
     }
 
-    // New method to prevent multiple sends
+    // new method to prevent multiple sends
     private static void sendMessageIfNotSending() {
         JsonChat chat = ui.getChat();
         if (chat == null) return;
 
-        // Use synchronized block to ensure thread safety
+        // use synchronized block to ensure thread safety
         synchronized (DisplayChatController.class) {
             // Check if a message is already being sent
             if (isMessageSending) {
                 return;
             }
 
-            // Set the flag to prevent concurrent sends
+            // set the flag to prevent concurrent sends
             isMessageSending = true;
         }
 
         try {
             String messageText = ui.getMessageText();
 
-            // Optionally, prevent sending empty messages
+            // optionally, prevent sending empty messages
             if (messageText == null || messageText.trim().isEmpty()) {
                 isMessageSending = false;
                 return;
@@ -78,16 +80,16 @@ public class DisplayChatController {
             );
 
             if (sentMessage != null) {
-                // Add the last message to the UI
+                // add the last message to the UI
                 DisplayChatUI.addMessage(sentMessage);
             }
 
-            // Clear the input field after sending
+            // clear the input field after sending
             ui.setMessageText("");
         } catch (IOException | InterruptedException ex) {
             throw new RuntimeException(ex);
         } finally {
-            // Always reset the flag, even if an exception occurs
+            // always reset the flag, even if an exception occurs
             isMessageSending = false;
         }
     }
@@ -149,7 +151,7 @@ public class DisplayChatController {
         });
     }
 
-    // getters and setters remain the same
+    // getters and setters
     public DisplayChatService getService() {
         return DisplayChatController.service;
     }

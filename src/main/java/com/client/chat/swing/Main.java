@@ -17,7 +17,10 @@ public class Main {
             // LAB PC's IP: 10.22.9.10
             Main.socket = new Socket("localhost", 3000);
 
-            /* Create and display the form */
+            /* 
+             * create auth controller 
+             * which will then provide the ui
+             */
             new AuthController(new AuthUI());
         } catch (IOException e) {
             System.err.println("Error during connection with the server: " + e.getMessage());

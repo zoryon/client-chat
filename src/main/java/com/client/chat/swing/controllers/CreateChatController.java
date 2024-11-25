@@ -8,10 +8,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class CreateChatController {
+    // attributes
     CreateChatService service;
     CreateChatUI ui;
     ChatListUI chatListPanelUI;
 
+    // constructors
     public CreateChatController(CreateChatUI ui, ChatListUI chatListPanelUI) throws IOException {
         this.service = CreateChatService.getInstance();
         this.ui = ui;
@@ -20,6 +22,7 @@ public class CreateChatController {
         initListeners();
     }
 
+    // methods
     @SuppressWarnings("unused")
     public void initListeners() {
         ui.addCreateChatButtonListener(e -> {

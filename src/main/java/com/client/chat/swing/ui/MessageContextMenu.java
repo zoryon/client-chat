@@ -27,13 +27,13 @@ public class MessageContextMenu extends JPopupMenu {
     }
 
     private void createContextMenuItems() {
-        // Edit Message Option
+        // copy message option
         copyPanel = createContextMenuItem("Copy");
 
-        // Edit Message Option
+        // edit message option
         editPanel = createContextMenuItem("Edit");
 
-        // Remove Message Option
+        // remove message option
         removePanel = createContextMenuItem("Remove");
 
         add(copyPanel);
@@ -52,8 +52,13 @@ public class MessageContextMenu extends JPopupMenu {
 
         innerPanel.add(label, BorderLayout.CENTER);
 
-        // Add hover effect
-        innerPanel.addMouseListener(new MouseAdapter() {
+        /*
+         * add hover effect.
+         * both on 
+         * mouse entered &
+         * mouse exited
+         */
+         innerPanel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
                 innerPanel.setBackground(CustomColors.SECONDARY.getColor().brighter());
@@ -73,7 +78,7 @@ public class MessageContextMenu extends JPopupMenu {
     }
 
     public void setCopyMessageListener(MouseListener listener) {
-        // Add new listener to panel and its children
+        // add new listener to panel and its children
         copyPanel.addMouseListener(listener);
         for (Component comp : copyPanel.getComponents()) {
             comp.addMouseListener(listener);
@@ -81,7 +86,7 @@ public class MessageContextMenu extends JPopupMenu {
     }
 
     public void setEditMessageListener(MouseListener listener) {
-        // Add new listener to panel and its children
+        // add new listener to panel and its children
         editPanel.addMouseListener(listener);
         for (Component comp : editPanel.getComponents()) {
             comp.addMouseListener(listener);
@@ -89,7 +94,7 @@ public class MessageContextMenu extends JPopupMenu {
     }
     
     public void setRemoveMessageListener(MouseListener listener) {  
-        // Add new listener to panel and its children
+        // add new listener to panel and its children
         removePanel.addMouseListener(listener);
         for (Component comp : removePanel.getComponents()) {
             comp.addMouseListener(listener);

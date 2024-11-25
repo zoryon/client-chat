@@ -11,15 +11,18 @@ import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
 public class RequestPasswordUI extends JDialog {
+    // attributes
     private static final int DIALOG_WIDTH = 300;
     private static final int DIALOG_HEIGHT = 150;
 
+    // ui elements
     private final JPasswordField passwordField;
     private final JButton confirmButton;
     private final JButton cancelButton;
     private final ProfileService profileService;
     private final CompletableFuture<Boolean> verificationResult;
 
+    // constructors
     public RequestPasswordUI(Window owner, ProfileService profileService,
             CompletableFuture<Boolean> verificationResult) {
         super(owner, "Verify Password", ModalityType.APPLICATION_MODAL);
@@ -28,7 +31,7 @@ public class RequestPasswordUI extends JDialog {
 
         initializeDialog(owner);
 
-        // Initialize components
+        // initialize components
         JPanel mainPanel = createMainPanel();
         JPanel passwordPanel = createPasswordPanel();
         passwordField = createPasswordField();
@@ -36,11 +39,15 @@ public class RequestPasswordUI extends JDialog {
         confirmButton = createConfirmButton();
         cancelButton = createCancelButton();
 
-        // Assemble UI
+        /* 
+         * create the UI.
+         * add togheter
+         * --> mainPanel, passwordPanel, buttonPanel
+         */
         assembleUI(mainPanel, passwordPanel, buttonPanel);
         setupEventListeners();
 
-        // Gestione della chiusura della finestra
+        // on window closed
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -51,6 +58,7 @@ public class RequestPasswordUI extends JDialog {
         setVisible(true);
     }
 
+    // open dialog
     private void initializeDialog(Window owner) {
         setSize(DIALOG_WIDTH, DIALOG_HEIGHT);
         setLocationRelativeTo(owner);
@@ -77,6 +85,8 @@ public class RequestPasswordUI extends JDialog {
 
     private JPasswordField createPasswordField() {
         JPasswordField field = new JPasswordField();
+
+        // if ENTER key is pressed then the fn is run
         field.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -96,6 +106,13 @@ public class RequestPasswordUI extends JDialog {
 
     private JButton createConfirmButton() {
         JButton button = new JButton("Confirm");
+
+        /*  
+         * if true and the button has a border, 
+         * the border is painted with the background color.
+         * otherwise the background color will
+         * be set normally
+         */
         button.setBorderPainted(false);
         button.setBackground(CustomColors.DANGER.getColor());
         button.setForeground(CustomColors.MAIN_FOREGROUND.getColor());
@@ -126,19 +143,22 @@ public class RequestPasswordUI extends JDialog {
         String password = new String(passwordField.getPassword());
         try {
             if (profileService.deleteUser(password)) {
-                verificationResult.complete(true); // Segnaliamo il successo
+                verificationResult.complete(true); // signal success
                 dispose();
             } else {
                 DialogUtils.showErrorDialog(this, "Error", "Incorrect password. Please try again.");
                 passwordField.setText("");
-                // Non completiamo il future qui, permettendo all'utente di riprovare
+                /* 
+                 * not completing the future here,
+                 * so that the user can try again
+                 */
             }
         } catch (IOException | InterruptedException ex) {
             DialogUtils.showErrorDialog(this, "Error", "An error occurred: " + ex.getMessage());
-            verificationResult.complete(false); // Segnaliamo il fallimento
+            verificationResult.complete(false); // signaling failure
             dispose();
         } finally {
-            // Pulizia sicura della password
+            // clean password field
             Arrays.fill(passwordField.getPassword(), '0');
         }
     }
@@ -147,7 +167,8 @@ public class RequestPasswordUI extends JDialog {
     private void setupEventListeners() {
         confirmButton.addActionListener(e -> handlePasswordConfirmation());
         cancelButton.addActionListener(e -> {
-            verificationResult.complete(false); // Segnaliamo la cancellazione
+            // signaling failure, upon cancel request
+            verificationResult.complete(false);
             dispose();
         });
     }

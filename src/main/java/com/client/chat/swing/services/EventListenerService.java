@@ -29,7 +29,7 @@ public class EventListenerService extends Thread {
         this.chatList = new ArrayList<>();
     }
 
-    // only one instance can exist at a time
+    // singleton --> only one instance can exist at a time
     public static EventListenerService getInstance(BufferedReader in) {
         if (instance == null) {
             instance = new EventListenerService(in);

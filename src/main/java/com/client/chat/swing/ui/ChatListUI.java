@@ -13,21 +13,17 @@ import java.util.ArrayList;
 import java.util.function.Consumer;
 
 public class ChatListUI extends JPanel {
+    // attributes
     private static ChatListUI instance;
     private Consumer<JsonChat> chatClickHandler;
 
-    // List to store chat preview components
+    // ui elements
     private ArrayList<ChatPreview> chatPreviews;
-
-    // Search bar for filtering chats
     private JTextField searchChatField;
-
-    // Panel to hold chat previews
     private static JPanel chatPreviewContainer;
-
-    // panel to hold user data and view profile
     private JPanel userInfoPanel;
 
+    // constructors
     private ChatListUI() {
         chatPreviews = new ArrayList<>();
 
@@ -42,7 +38,7 @@ public class ChatListUI extends JPanel {
         customizeAppearance();
     }
 
-    // only one instance can exist at a time
+    // singleton --> only one instance can exist at a time
     public static ChatListUI getInstance() {
         if (instance == null) {
             instance = new ChatListUI();
@@ -50,29 +46,30 @@ public class ChatListUI extends JPanel {
         return instance;
     }
 
+    // reset the singleton
     public static void resetInstance() {
         instance = null;
     }
 
     @SuppressWarnings("unused")
     private void initializeComponents() {
-        // Create panel for title and new chat button
+        // create panel for title and new chat button
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
         topPanel.setOpaque(false);
 
-        // Create title
+        // create title
         JLabel titleLabel = new JLabel("Chat List", SwingConstants.CENTER); // Centered title
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
         add(titleLabel, BorderLayout.NORTH);
 
-        // Create chat title
+        // create chat title
         JLabel title = new JLabel("Chat");
         title.setForeground(CustomColors.MAIN_FOREGROUND.getColor());
         title.setFont(new Font("Arial", Font.BOLD, 20));
 
-        // Create "New Chat" button
+        // create "New Chat" button
         JButton newChatButton = new JButton("+");
         newChatButton.setFont(new Font("Arial", Font.BOLD, 14));
         newChatButton.setBackground(CustomColors.PRIMARY.getColor());
@@ -80,17 +77,17 @@ public class ChatListUI extends JPanel {
         newChatButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
         newChatButton.setFocusPainted(false);
         newChatButton.addActionListener(e -> {
-            // Get the parent window
+            // get the parent window
             Window parentWindow = SwingUtilities.getWindowAncestor(this);
 
             // Create the UI without showing it
             CreateChatUI createChatUI = new CreateChatUI(parentWindow);
 
             try {
-                // Initialize the controller and attach listeners
+                // initialize the controller and attach listeners
                 new CreateChatController(createChatUI, this);
 
-                // Show the dialog after the controller is ready
+                // show the dialog after the controller is ready
                 createChatUI.setVisible(true);
             } catch (IOException ex) {
                 JOptionPane.showMessageDialog(
@@ -102,15 +99,15 @@ public class ChatListUI extends JPanel {
             }
         });
 
-        // Add title and new chat button to the top panel
+        // add title and new chat button to the top panel
         topPanel.add(title, BorderLayout.WEST);
         topPanel.add(newChatButton, BorderLayout.EAST);
 
-        // Create search panel for search field
+        // create search panel for search field
         JPanel searchPanel = new JPanel(new BorderLayout());
         searchPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 10, 0, CustomColors.BACKGROUND.getColor()));
 
-        // Create search bar
+        // create search bar
         searchChatField = new JTextField("Search an existing chat..");
         searchChatField.setForeground(Color.GRAY);
         searchChatField.setFont(new Font("Arial", Font.PLAIN, 16));
@@ -136,21 +133,21 @@ public class ChatListUI extends JPanel {
             }
         });
 
-        // Add search field to search panel
+        // add search field to search panel
         searchPanel.add(searchChatField, BorderLayout.CENTER);
 
-        // Create chat preview container
+        // create chat preview container
         chatPreviewContainer = new JPanel();
         chatPreviewContainer.setLayout(new BoxLayout(chatPreviewContainer, BoxLayout.Y_AXIS));
         chatPreviewContainer.setBackground(CustomColors.BACKGROUND.getColor());
 
-        // Scroll pane to contain chat list
+        // scroll pane to contain chat list
         JScrollPane chatListScrollPane = new JScrollPane(chatPreviewContainer);
         chatListScrollPane.setBorder(BorderFactory.createEmptyBorder());
         chatListScrollPane.setBackground(CustomColors.BACKGROUND.getColor());
         chatListScrollPane.getViewport().setBackground(CustomColors.BACKGROUND.getColor());
 
-        // Combine search and chat list in a central panel
+        // combine search and chat list in a central panel
         JPanel centerPanel = new JPanel(new BorderLayout());
         centerPanel.add(searchPanel, BorderLayout.NORTH);
         centerPanel.add(chatListScrollPane, BorderLayout.CENTER);
@@ -180,7 +177,7 @@ public class ChatListUI extends JPanel {
 
         userInfoPanel.add(usernameLabel, BorderLayout.WEST);
 
-        // Add components to main panel
+        // add components to main panel
         add(topPanel, BorderLayout.NORTH);
         add(centerPanel, BorderLayout.CENTER);
         add(userInfoPanel, BorderLayout.SOUTH);
@@ -188,7 +185,7 @@ public class ChatListUI extends JPanel {
 
     public void populateChatPreviews(ArrayList<JsonChat> chatList) {
         if (chatPreviews != null) {
-            chatPreviewContainer.removeAll(); // Clear existing previews
+            chatPreviewContainer.removeAll(); // clear existing previews
             chatPreviews.clear();
         }
 
@@ -198,26 +195,29 @@ public class ChatListUI extends JPanel {
             chatPreviewContainer.add(preview);
         }
 
-        chatPreviewContainer.revalidate(); // Refresh UI
+        /*
+         * revalidate --> make the changes visible
+         * repaint --> make the changes effective
+         */
+        chatPreviewContainer.revalidate();
         chatPreviewContainer.repaint();
     }
 
     private void customizeAppearance() {
-        // Modern, clean design
         setBackground(CustomColors.BACKGROUND.getColor());
 
-        // Custom search field styling
         searchChatField.setFont(new Font("Arial", Font.PLAIN, 16));
         searchChatField.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(220, 220, 220)),
                 BorderFactory.createEmptyBorder(10, 10, 10, 10)));
     }
 
+    // listeners
     public void addProfileListener(MouseAdapter listener) {
         userInfoPanel.addMouseListener(listener);
     }
 
-    // Inner class for chat preview
+    // inner class for chat preview
     public class ChatPreview extends JPanel {
         @SuppressWarnings("unused")
         private final JsonChat chat;
@@ -236,27 +236,27 @@ public class ChatListUI extends JPanel {
             setOpaque(false);
             setBackground(CustomColors.BACKGROUND.getColor());
 
-            // Contact name
+            // contact name
             JLabel nameLabel = new JLabel(chat != null ? calculateContactName(chat.getChatName()) : "Chat");
-            nameLabel.setFont(new Font("Arial", Font.BOLD, 18)); // Increased from 16 to 18
+            nameLabel.setFont(new Font("Arial", Font.BOLD, 18));
             nameLabel.setForeground(CustomColors.MAIN_FOREGROUND.getColor());
 
-            // Last message preview - Truncated to 10 chars
+            // last message preview - truncated to 10 chars
             JLabel messagePreview;
 
             if (chat.getMessages().isEmpty()) {
                 messagePreview = new JLabel("...");
             } else {
                 String message = chat.getMessages().get(chat.getMessages().size() - 1).getContent();
-                // Truncate message to 10 characters and add ellipsis
+                // truncate message to 10 characters and add ellipsis (...)
                 message = message.length() > 30 ? message.substring(0, 30) + "..." : message;
                 messagePreview = new JLabel(message);
             }
 
-            messagePreview.setFont(new Font("Arial", Font.PLAIN, 12)); // Decreased from 14 to 12
+            messagePreview.setFont(new Font("Arial", Font.PLAIN, 12));
             messagePreview.setForeground(Color.GRAY);
 
-            // Layout components
+            // layout components
             JPanel centerPanel = new JPanel(new BorderLayout());
             centerPanel.add(nameLabel, BorderLayout.NORTH);
             centerPanel.add(messagePreview, BorderLayout.CENTER);
@@ -264,7 +264,7 @@ public class ChatListUI extends JPanel {
 
             add(centerPanel, BorderLayout.CENTER);
 
-            // Add hover and click effects
+            // add hover and click effects
             addMouseListener(new java.awt.event.MouseAdapter() {
                 @Override
                 public void mouseEntered(java.awt.event.MouseEvent evt) {
@@ -315,14 +315,11 @@ public class ChatListUI extends JPanel {
 
             Graphics2D g2 = (Graphics2D) g.create();
 
-            // Enable anti-aliasing for smooth corners
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-            // Set background color
             g2.setColor(getBackground());
 
-            // Draw rounded rectangle
-            int arc = 20; // Arc radius for rounded corners
+            // draw rounded rectangle
+            int arc = 20; // arc radius for rounded corners
             g2.fillRoundRect(0, 0, getWidth(), getHeight(), arc, arc);
 
             g2.dispose();
@@ -335,7 +332,7 @@ public class ChatListUI extends JPanel {
 
     public void setChatClickHandler(Consumer<JsonChat> handler) {
         this.chatClickHandler = handler;
-        // Update existing chat previews with new handler
+        // update existing chat previews with new handler
         if (chatPreviews != null) {
             for (ChatPreview preview : chatPreviews) {
                 preview.updateClickHandler(handler);

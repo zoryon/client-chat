@@ -12,6 +12,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 public class CreateChatUI extends JDialog {
+    // ui elements
     private JButton createChatButton;
     private JButton toggleModeButton;
     private JButton addUserFieldButton;
@@ -22,6 +23,7 @@ public class CreateChatUI extends JDialog {
     private JLabel titleLabel;
     private boolean isGroupMode = false;
 
+    // constructors
     public CreateChatUI(Window owner) {
         super(owner, "Create Chats", Dialog.ModalityType.APPLICATION_MODAL);
 
@@ -29,7 +31,6 @@ public class CreateChatUI extends JDialog {
         setSize(500, 400);
         setLocationRelativeTo(owner);
         
-        // Set dialog background and foreground
         setBackground(CustomColors.BACKGROUND.getColor());
         setForeground(CustomColors.MAIN_FOREGROUND.getColor());
 
@@ -44,7 +45,7 @@ public class CreateChatUI extends JDialog {
         mainPanel.setForeground(CustomColors.MAIN_FOREGROUND.getColor());
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Title and mode toggle panel
+        // title and mode toggle panel
         JPanel titlePanel = new JPanel(new BorderLayout(5, 5));
         titlePanel.setBackground(CustomColors.BACKGROUND.getColor());
         titlePanel.setForeground(CustomColors.MAIN_FOREGROUND.getColor());
@@ -61,7 +62,7 @@ public class CreateChatUI extends JDialog {
         titlePanel.add(titleLabel, BorderLayout.WEST);
         titlePanel.add(toggleModeButton, BorderLayout.EAST);
 
-        // Chat name panel (initially invisible)
+        // chat name panel (initially invisible)
         chatNamePanel = new JPanel(new BorderLayout(5, 5));
         chatNamePanel.setBackground(CustomColors.BACKGROUND.getColor());
         chatNamePanel.setForeground(CustomColors.MAIN_FOREGROUND.getColor());
@@ -87,7 +88,7 @@ public class CreateChatUI extends JDialog {
         chatNamePanel.add(chatNameField, BorderLayout.CENTER);
         chatNamePanel.setVisible(false);
 
-        // Username section
+        // username section
         JPanel usernameSection = new JPanel(new BorderLayout(10, 10));
         usernameSection.setBackground(CustomColors.BACKGROUND.getColor());
         usernameSection.setForeground(CustomColors.MAIN_FOREGROUND.getColor());
@@ -120,7 +121,7 @@ public class CreateChatUI extends JDialog {
         usernameSection.add(scrollPane, BorderLayout.CENTER);
         usernameSection.add(addUserFieldButton, BorderLayout.EAST);
 
-        // Create chat button
+        // create chat button
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         buttonPanel.setBackground(CustomColors.BACKGROUND.getColor());
         buttonPanel.setForeground(CustomColors.MAIN_FOREGROUND.getColor());
@@ -129,7 +130,7 @@ public class CreateChatUI extends JDialog {
         createChatButton.setFont(new Font("Arial", Font.PLAIN, 14));
         buttonPanel.add(createChatButton);
 
-        // Layout assembly
+        // layout creation
         JPanel topPanel = new JPanel(new BorderLayout(10, 10));
         topPanel.setBackground(CustomColors.BACKGROUND.getColor());
         topPanel.setForeground(CustomColors.MAIN_FOREGROUND.getColor());
@@ -146,19 +147,22 @@ public class CreateChatUI extends JDialog {
     private void toggleMode() {
         isGroupMode = !isGroupMode;
         
-        // Update UI elements
+        // update UI elements
         titleLabel.setText(isGroupMode ? "New Group Chat" : "New Direct Chat");
         toggleModeButton.setText(isGroupMode ? "New Direct Chat" : "New Group Chat");
         createChatButton.setText(isGroupMode ? "Create Group" : "Create Chat");
         chatNamePanel.setVisible(isGroupMode);
         addUserFieldButton.setVisible(isGroupMode);
 
-        // Clear existing fields
+        // clear existing fields
         chatNameField.setText("");
         userFieldsPanel.removeAll();
         addUsernameField();
 
-        // Refresh UI
+        /*
+         * revalidate --> make the changes visible
+         * repaint --> make the changes effective
+         */
         revalidate();
         repaint();
         validateButtonStates();

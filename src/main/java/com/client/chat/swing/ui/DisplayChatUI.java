@@ -16,7 +16,10 @@ import java.awt.event.KeyAdapter;
 import java.util.ArrayList;
 
 public class DisplayChatUI extends JPanel {
+    // attributes
     private static JsonChat chat;
+
+    // ui elements
     private JPanel chatHeaderPanel;
     private static JScrollPane chatMessageScrollPane;
     private static JPanel chatMessageContainer;
@@ -24,6 +27,7 @@ public class DisplayChatUI extends JPanel {
     private JTextField messageInputField;
     private JButton sendButton;
 
+    // constructors
     public DisplayChatUI(JsonChat chat) {
         DisplayChatUI.chat = chat;
 
@@ -52,6 +56,7 @@ public class DisplayChatUI extends JPanel {
         createMessageInputPanel();
     }
 
+    // show blank display in case no chat is selected
     private void showBlankDisplay() {
         removeAll();
         JLabel blankLabel = new JLabel("No chat selected", SwingConstants.CENTER);
@@ -60,6 +65,11 @@ public class DisplayChatUI extends JPanel {
         blankLabel.setFont(new Font("Arial", Font.ITALIC, 16));
 
         add(blankLabel, BorderLayout.CENTER);
+
+        /*
+         * revalidate --> make the changes visible
+         * repaint --> make the changes effective
+         */
         revalidate();
         repaint();
     }
@@ -75,7 +85,7 @@ public class DisplayChatUI extends JPanel {
         Border emptyBorder = BorderFactory.createEmptyBorder(5, 15, 5, 15);
         chatHeaderPanel.setBorder(BorderFactory.createCompoundBorder(matteBorder, emptyBorder));
 
-        // Contact name
+        // contact name
         JLabel chatNameLabel = new JLabel(chat != null ? calculateContactName(chat.getChatName()) : "Chat");
         chatNameLabel.setFont(new Font("Arial", Font.BOLD, 18));
         chatNameLabel.setForeground(CustomColors.MAIN_FOREGROUND.getColor());
@@ -108,41 +118,40 @@ public class DisplayChatUI extends JPanel {
         messagePanel.setLayout(new BoxLayout(messagePanel, BoxLayout.Y_AXIS));
         messagePanel.setOpaque(false);
 
-        // Aggiungi il nome del mittente per i messaggi ricevuti
+        // add sender's name for each received message
         if (!isSentByCurrentUser) {
             JLabel senderNameLabel = new JLabel(message.getSenderName());
             senderNameLabel.setFont(new Font("Arial", Font.BOLD, 12));
             senderNameLabel.setForeground(CustomColors.MAIN_FOREGROUND.getColor());
 
-            // Create a panel for the name to control its alignment
+            // create a panel for the name to control its alignment
             JPanel namePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 5));
             namePanel.setOpaque(false);
             namePanel.add(senderNameLabel);
             messagePanel.add(namePanel);
         }
 
-        // Crea il pannello per il messaggio
+        // create message panel --> "bubble"
         JPanel bubblePanel = new JPanel();
         bubblePanel.setLayout(new FlowLayout(isSentByCurrentUser ? FlowLayout.RIGHT : FlowLayout.LEFT, 0, 0));
         bubblePanel.setOpaque(false);
 
-        // Usa JTextArea per il wrapping del testo
+        // use JTextArea for wrapping text
         JTextArea messageArea = new JTextArea(message.getContent());
 
-        // adding a property id to delete it later
+        // add a property id to delete when needed
         messageArea.putClientProperty("messageId", message.getId());
 
-        messageArea.setLineWrap(true); // Abilita il wrapping delle righe
-        messageArea.setWrapStyleWord(true); // Mantieni le parole intere
-        messageArea.setEditable(false); // Il testo non è editabile
+        messageArea.setLineWrap(true); // adding wrapping on lines
+        messageArea.setWrapStyleWord(true);
+        messageArea.setEditable(false); // text is not editablee
         messageArea.setBackground(isSentByCurrentUser
                 ? CustomColors.TEXT_BUBBLE_BACKGROUND_OWNER.getColor()
                 : CustomColors.TEXT_BUBBLE_BACKGROUND_OTHERS.getColor());
-        messageArea.setFont(new Font("Arial", Font.PLAIN, 16)); // Imposta la stessa font
+        messageArea.setFont(new Font("Arial", Font.PLAIN, 16));
         messageArea.setForeground(CustomColors.MAIN_FOREGROUND.getColor());
         messageArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Imposta la larghezza massima
         messageArea.setMaximumSize(new Dimension(
                 chatMessageScrollPane.getViewport().getWidth() / 2,
                 Integer.MAX_VALUE));
@@ -164,7 +173,7 @@ public class DisplayChatUI extends JPanel {
             return;
         }
 
-        chatMessageContainer.removeAll(); // Rimuovi tutti i messaggi esistenti
+        chatMessageContainer.removeAll(); // remove all existing messages
 
         for (JsonMessage message : newMessages) {
             boolean isSentByCurrentUser = message.getSenderName().equals(AuthManager.getInstance().getUsername());
@@ -172,19 +181,23 @@ public class DisplayChatUI extends JPanel {
             chatMessageContainer.add(messageRow);
         }
 
-        // Aggiungi uno spazio tra ogni riga di messaggi
+        // add distance between every message
         for (int i = 0; i < chatMessageContainer.getComponentCount(); i++) {
             Component row = chatMessageContainer.getComponent(i);
             if (row instanceof JPanel) {
-                ((JPanel) row).setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0)); // Distanza tra le righe
+                ((JPanel) row).setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
             }
         }
 
-        chatMessageContainer.revalidate(); // Rende visibili i cambiamenti
-        chatMessageContainer.repaint(); // Rende effettivi i cambiamenti
+        /*
+         * revalidate --> make the changes visible
+         * repaint --> make the changes effective
+         */
+        chatMessageContainer.revalidate();
+        chatMessageContainer.repaint();
 
-        JScrollBar vertical = chatMessageScrollPane.getVerticalScrollBar();
-        vertical.setValue(vertical.getMaximum()); // Scorrimento automatico
+        // automatic scroll
+        scrollToBottom();
     }
 
     public static void removeMessage(JsonMessage message) {
@@ -193,13 +206,13 @@ public class DisplayChatUI extends JPanel {
         if (chatMessageContainer == null || message == null)
             return;
 
-        // Iterate over the components in chatMessageContainer
+        // iterate over the components in chatMessageContainer
         Component[] components = chatMessageContainer.getComponents();
         for (Component component : components) {
             if (component instanceof JPanel) {
                 JPanel messagePanel = (JPanel) component;
 
-                // Look for the JTextArea containing the message content
+                // look for the JTextArea containing the message content
                 for (Component innerComponent : messagePanel.getComponents()) {
                     if (innerComponent instanceof JPanel) {
                         JPanel bubblePanel = (JPanel) innerComponent;
@@ -208,10 +221,15 @@ public class DisplayChatUI extends JPanel {
                             if (bubbleComponent instanceof JTextArea) {
                                 JTextArea messageArea = (JTextArea) bubbleComponent;
 
-                                // Check if this message matches the one to be removed
+                                // check if this message matches the one to be removed
                                 Integer messageId = (Integer) messageArea.getClientProperty("messageId");
                                 if (messageId == message.getId()) {
-                                    chatMessageContainer.remove(messagePanel); // Remove the entire message panel
+                                    chatMessageContainer.remove(messagePanel); // remove the entire message panel
+
+                                    /*
+                                     * revalidate --> make the changes visible
+                                     * repaint --> make the changes effective
+                                     */
                                     chatMessageContainer.revalidate();
                                     chatMessageContainer.repaint();
                                     return;
@@ -228,6 +246,12 @@ public class DisplayChatUI extends JPanel {
         if (DisplayChatUI.chat == null)
             return;
 
+        /* 
+         * if the new message's chat does not match the 
+         * chat which is being displayed currently,
+         * in the display chat panel, then this message
+         * does not need to be displayed right away
+         */
         if (DisplayChatUI.chat.getId() != newMessage.getChatId())
             return;
 
@@ -240,6 +264,10 @@ public class DisplayChatUI extends JPanel {
         chatMessageContainer.add(messageBubble);
         chatMessageContainer.add(Box.createRigidArea(new Dimension(0, 10)));
 
+        /*
+         * revalidate --> make the changes visible
+         * repaint --> make the changes effective
+         */
         chatMessageContainer.revalidate();
         chatMessageContainer.repaint();
 
@@ -276,7 +304,6 @@ public class DisplayChatUI extends JPanel {
             JScrollBar vertical = chatMessageScrollPane.getVerticalScrollBar();
             vertical.setValue(vertical.getMaximum());
 
-            // Optional: Smooth scroll animation
             int maximum = vertical.getMaximum() - vertical.getVisibleAmount();
             vertical.setValue(maximum);
         });
@@ -295,24 +322,29 @@ public class DisplayChatUI extends JPanel {
 
         removeAll();
 
-        // Update header
+        // update header
         createChatHeader();
 
-        // Update messages
+        // update messages
         updateMessages(chat, chat.getMessages());
 
-        // Add scroll pane and input panel
+        // add scroll pane and input panel
         add(chatMessageScrollPane, BorderLayout.CENTER);
         add(messageInputPanel, BorderLayout.SOUTH);
 
+        /*
+         * revalidate --> make the changes visible
+         * repaint --> make the changes effective
+         */
         revalidate();
         repaint();
     }
 
     private void updateMessageBubbles() {
-        // Ricalcola la larghezza del messaggio in base alla larghezza attuale del
-        // contenitore
-        // Ricalcola ogni messaggio per adattarsi alla nuova larghezza
+        /*
+         * recalculate the message width based on the current width of the container
+         * recalculate each message to fit the new width
+         */
         for (Component component : chatMessageContainer.getComponents()) {
             if (component instanceof JPanel) {
                 JPanel rowPanel = (JPanel) component;
@@ -322,7 +354,7 @@ public class DisplayChatUI extends JPanel {
                             if (textComponent instanceof JTextArea) {
                                 JTextArea messageArea = (JTextArea) textComponent;
 
-                                // Adjust size based on the current scroll pane width
+                                // adjust size based on the current scroll pane width
                                 messageArea
                                         .setPreferredSize(new Dimension((int) messageArea.getPreferredSize().getWidth(),
                                                 (int) messageArea.getPreferredSize().getHeight()));
@@ -336,7 +368,10 @@ public class DisplayChatUI extends JPanel {
             }
         }
 
-        // Ricalcola e ridisegna il layout
+        /*
+         * revalidate --> make the changes visible
+         * repaint --> make the changes effective
+         */
         chatMessageContainer.revalidate();
         chatMessageContainer.repaint();
     }
@@ -365,12 +400,12 @@ public class DisplayChatUI extends JPanel {
         }
     }
 
+    // listeners
     private void addResizeListener() {
         this.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                // Ricalcola le dimensioni dei messaggi ogni volta che il pannello viene
-                // ridimensionato
+                // recalculate messages sizes everytime the windows is resized
                 updateMessageBubbles();
             }
         });

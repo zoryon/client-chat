@@ -14,7 +14,7 @@ public class AppService extends Service {
         super();
     }
 
-    // only one instance can exist at a time
+    // singleton --> only one instance can exist at a time
     public static AppService getInstance() throws IOException {
         if (instance == null) {
             instance = new AppService();

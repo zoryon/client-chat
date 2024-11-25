@@ -4,7 +4,7 @@ import javax.swing.JOptionPane;
 import java.awt.Component;
 
 public class DialogUtils {
-    private DialogUtils() {} // Prevent instantiation
+    private DialogUtils() {} // prevent instantiation
     
     public static void showErrorDialog(Component parent, String title, String message) {
         JOptionPane.showMessageDialog(

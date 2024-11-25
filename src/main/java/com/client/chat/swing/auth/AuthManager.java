@@ -12,7 +12,7 @@ public class AuthManager {
         this.username = null;
     }
     
-    // only one instance can exist at a time
+    // singleton --> only one instance can exist at a time
     public static AuthManager getInstance() {
         if (instance == null) {
             instance = new AuthManager();

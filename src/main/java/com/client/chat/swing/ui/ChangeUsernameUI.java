@@ -11,9 +11,11 @@ import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
 public class ChangeUsernameUI extends JDialog {
+    // attributes
     private static final int DIALOG_WIDTH = 350;
     private static final int DIALOG_HEIGHT = 200;
 
+    // ui elements
     private final JTextField usernameField;
     private final JPasswordField passwordField;
     private final JButton confirmButton;
@@ -26,7 +28,7 @@ public class ChangeUsernameUI extends JDialog {
         this.profileService = profileService;
         this.changeResult = changeResult;
 
-        // Initialize fields first
+        // initialize fields first
         usernameField = createUsernameField();
         passwordField = createPasswordField();
         confirmButton = createConfirmButton();
@@ -34,16 +36,17 @@ public class ChangeUsernameUI extends JDialog {
 
         initializeDialog(owner);
 
-        // Initialize panels
+        // initialize panels
         JPanel mainPanel = createMainPanel();
-        JPanel inputPanel = createInputPanel(); // Pass initialized fields
+        JPanel inputPanel = createInputPanel();
         JPanel buttonPanel = createButtonPanel();
 
-        // Assemble UI
+        // create UI
         assembleUI(mainPanel, inputPanel, buttonPanel);
 
         setupEventListeners();
 
+        // on close the fn is run
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {

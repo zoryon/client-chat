@@ -19,9 +19,11 @@ import java.util.concurrent.CompletableFuture;
 import javax.swing.SwingUtilities;
 
 public class AppController {
+    // attributes
     private final AppService service;
     private final AppUI ui;
 
+    // constructors
     public AppController(AppUI ui) throws IOException {
         this.service = AppService.getInstance();
         this.ui = ui;
@@ -30,6 +32,7 @@ public class AppController {
         this.handlePopulateChatPreviews();
     }
 
+    // methods
     private void handleAddEventListeners() {
         this.ui.addWindowExitListener(new WindowAdapter() {
             @Override
@@ -43,7 +46,7 @@ public class AppController {
             }
         });
 
-        // Set up the click handler
+        // set up the click handler
         ChatListUI chatList = ChatListUI.getInstance();
         chatList.setChatClickHandler(chat -> {
             Window parentWindow = SwingUtilities.getWindowAncestor(chatList);
@@ -133,13 +136,13 @@ public class AppController {
 
     private void handleDeleteUser(UserProfileUI profileUI, ProfileService profileService) {
         try {
-            // Creiamo un CompletableFuture per gestire il risultato della verifica password
+            // create a CompletableFuture to manage password verification result
             CompletableFuture<Boolean> passwordVerification = new CompletableFuture<>();
             
-            // Creiamo il dialog di verifica password passando il CompletableFuture
+            // create dialog pasing the CompletableFuture
             new RequestPasswordUI(ui, profileService, passwordVerification);
             
-            // Attendiamo il risultato della verifica
+            // wait for result
             passwordVerification.thenAccept(verified -> {
                 if (verified) {
                     try {
@@ -160,7 +163,6 @@ public class AppController {
             
             new ChangeUsernameUI(ui, profileService, changeResult);
             
-            // Handle the result
             changeResult.thenAccept(changed -> {
                 if (changed) {
                     refreshApp(profileUI);

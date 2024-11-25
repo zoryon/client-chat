@@ -8,9 +8,7 @@ import java.io.IOException;
 import java.util.Objects;
 
 public class AuthUI extends CustomFrame {
-    /*
-     * Creates new form Login
-     */
+    // constructors
     public AuthUI() throws IOException {
         super(false);
         initComponents();
@@ -43,7 +41,7 @@ public class AuthUI extends CustomFrame {
         JPanel jPanel2 = new JPanel();
         JLabel jLabel7 = new JLabel();
 
-        jLabel5.setIcon(new ImageIcon(Objects.requireNonNull(getClass().getResource("/icons/login_icon.png")))); // NOI18N
+        jLabel5.setIcon(new ImageIcon(Objects.requireNonNull(getClass().getResource("/icons/login_icon.png"))));
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
@@ -53,7 +51,7 @@ public class AuthUI extends CustomFrame {
         jPanel3.setPreferredSize(new java.awt.Dimension(445, 160));
         jPanel3.setOpaque(false);
 
-        jLabel1.setFont(new java.awt.Font("Segue UI", Font.BOLD, 18)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Segue UI", Font.BOLD, 18));
         jLabel1.setText("Login Required");
         jLabel1.setForeground(CustomColors.MAIN_FOREGROUND.getColor());
 
@@ -129,20 +127,18 @@ public class AuthUI extends CustomFrame {
         jPanel2.setPreferredSize(new Dimension(600, 430));
         jPanel2.setLayout(new GridBagLayout());
 
-        jLabel7.setIcon(new ImageIcon(Objects.requireNonNull(getClass().getResource("/icons/login_icon.png")))); // NOI18N
+        jLabel7.setIcon(new ImageIcon(Objects.requireNonNull(getClass().getResource("/icons/login_icon.png"))));
         jPanel2.add(jLabel7);
 
         getContentPane().add(jPanel2, BorderLayout.CENTER);
 
         pack();
-    }// </editor-fold>//GEN-END:initComponents
+    }
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
     private JButton jButton2;
     private JButton jButton3;
     private JPasswordField jPasswordField1;
     private JTextField jTextField2;
-    // End of variables declaration//GEN-END:variables
 
     // getters and setters
     public String getUsername() {
@@ -153,7 +149,7 @@ public class AuthUI extends CustomFrame {
         return new String(jPasswordField1.getPassword());
     }
 
-    // methods
+    // listeners
     public void addSignUpListener(java.awt.event.ActionListener listener) {
         jButton2.addActionListener(listener);
     }

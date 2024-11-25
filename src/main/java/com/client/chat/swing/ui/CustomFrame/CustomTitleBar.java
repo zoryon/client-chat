@@ -6,10 +6,12 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class CustomTitleBar extends JPanel {
+    // attributes
     private Point initialClick;
     private final JFrame parentFrame;
     private Runnable closeAction;
 
+    // constructors
     public CustomTitleBar(JFrame frame, String titleText) {
         this.parentFrame = frame;
         this.closeAction = frame::dispose;
@@ -17,16 +19,15 @@ public class CustomTitleBar extends JPanel {
         setPreferredSize(new Dimension(frame.getWidth(), 30));
         setLayout(new BorderLayout());
 
-        // Add title label
         JLabel title = new JLabel(titleText);
         title.setForeground(Color.WHITE);
         title.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
         add(title, BorderLayout.WEST);
 
-        // Add window controls
+        // add window controls
         add(createWindowControls(), BorderLayout.EAST);
 
-        // Add dragging functionality
+        // add dragging functionality
         addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
                 initialClick = e.getPoint();
@@ -36,24 +37,24 @@ public class CustomTitleBar extends JPanel {
         addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
-                // Check if window is maximized
+                // check if window is maximized
                 if (parentFrame.getExtendedState() == JFrame.MAXIMIZED_BOTH) {
-                    // Restore to normal state
+                    // restore to normal state
                     parentFrame.setExtendedState(JFrame.NORMAL);
                     
-                    // Calculate new initial position for the restored window
-                    // We want the mouse to "grab" the window at a proportional position
+                    // calculate new initial position for the restored window
+                    // we want the mouse to "grab" the window at a proportional position
                     double proportionalX = e.getX() / (double) getWidth();
                     int newWidth = parentFrame.getWidth();
                     int newX = e.getXOnScreen() - (int)(proportionalX * newWidth);
                     
-                    // Set the new location
+                    // set the new location
                     parentFrame.setLocation(newX, 0);
                     
-                    // Update initial click to prevent jump
+                    // update initial click to prevent jump
                     initialClick = new Point((int)(proportionalX * newWidth), e.getY());
                 } else {
-                    // Normal dragging behavior
+                    // normal dragging behavior
                     int thisX = parentFrame.getLocation().x;
                     int thisY = parentFrame.getLocation().y;
 
@@ -66,6 +67,11 @@ public class CustomTitleBar extends JPanel {
         });
     }
 
+    /**
+     * 
+     * @overload CustomTitleBar
+     * with signature (JFrame frame, String titleText)
+     */
     public CustomTitleBar(JFrame frame, String titleText, boolean isResizable) {
         this.parentFrame = frame;
         this.closeAction = frame::dispose;
@@ -73,16 +79,15 @@ public class CustomTitleBar extends JPanel {
         setPreferredSize(new Dimension(frame.getWidth(), 30));
         setLayout(new BorderLayout());
 
-        // Add title label
         JLabel title = new JLabel(titleText);
         title.setForeground(Color.WHITE);
         title.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
         add(title, BorderLayout.WEST);
 
-        // Add window controls
+        // add window controls
         add(createWindowControls(isResizable), BorderLayout.EAST);
 
-        // Add dragging functionality
+        // add dragging functionality
         addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
                 initialClick = e.getPoint();
@@ -92,24 +97,24 @@ public class CustomTitleBar extends JPanel {
         addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
-                // Check if window is maximized
+                // check if window is maximized
                 if (parentFrame.getExtendedState() == JFrame.MAXIMIZED_BOTH) {
-                    // Restore to normal state
+                    // restore to normal state
                     parentFrame.setExtendedState(JFrame.NORMAL);
                     
-                    // Calculate new initial position for the restored window
-                    // We want the mouse to "grab" the window at a proportional position
+                    // calculate new initial position for the restored window
+                    // we want the mouse to "grab" the window at a proportional position
                     double proportionalX = e.getX() / (double) getWidth();
                     int newWidth = parentFrame.getWidth();
                     int newX = e.getXOnScreen() - (int)(proportionalX * newWidth);
                     
-                    // Set the new location
+                    // set the new location
                     parentFrame.setLocation(newX, 0);
                     
-                    // Update initial click to prevent jump
+                    // update initial click to prevent jump
                     initialClick = new Point((int)(proportionalX * newWidth), e.getY());
                 } else {
-                    // Normal dragging behavior
+                    // normal dragging behavior
                     int thisX = parentFrame.getLocation().x;
                     int thisY = parentFrame.getLocation().y;
 

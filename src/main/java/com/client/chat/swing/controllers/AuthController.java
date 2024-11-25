@@ -10,9 +10,11 @@ import com.client.chat.swing.ui.AppUI;
 import com.client.chat.swing.ui.AuthUI;
 
 public class AuthController {
+    // attributes
     private final AuthService service;
     private final AuthUI ui;
 
+    // constructors
     public AuthController(AuthUI ui) throws IOException {
         this.service = AuthService.getInstance();
         this.ui = ui;
@@ -20,6 +22,7 @@ public class AuthController {
         this.handleAddEventListeners();
     }
 
+    // methods
     @SuppressWarnings("unused")
     private void handleAddEventListeners() {
         // add listener for signing up

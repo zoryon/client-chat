@@ -9,9 +9,11 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 public class CustomFrame extends JFrame {
+    // attributes
     private WindowListener exitListener;
     private Rectangle maxBounds;
 
+    // constructors
     public CustomFrame() {
         maxBounds = null;
 
@@ -21,7 +23,7 @@ public class CustomFrame extends JFrame {
         setMinimumSize(new Dimension(10, 10));
         setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
 
-        // Add custom title bar
+        // add custom title bar
         CustomTitleBar titleBar = new CustomTitleBar(this, "");
         titleBar.setCloseAction(() -> {
             if (exitListener != null) {
@@ -33,15 +35,20 @@ public class CustomFrame extends JFrame {
         });
         add(titleBar, BorderLayout.NORTH);
 
-        // Add content panel
+        // add content panel
         JPanel contentPanel = new JPanel();
         contentPanel.setBackground(Color.WHITE);
         add(contentPanel, BorderLayout.CENTER);
 
-        // Add window resizer
+        // add window resizer
         new WindowResizer(this);
     }
 
+    /**
+     * 
+     * @overload CustomFrame
+     * with signature ()
+     */
     public CustomFrame(boolean isResizable) {
         maxBounds = null;
 
@@ -51,7 +58,7 @@ public class CustomFrame extends JFrame {
         setMinimumSize(new Dimension(10, 10));
         setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
 
-        // Add custom title bar
+        // add custom title bar
         CustomTitleBar titleBar = new CustomTitleBar(this, "", isResizable);
         titleBar.setCloseAction(() -> {
             if (exitListener != null) {
@@ -63,13 +70,13 @@ public class CustomFrame extends JFrame {
         });
         add(titleBar, BorderLayout.NORTH);
 
-        // Add content panel
+        // add content panel
         JPanel contentPanel = new JPanel();
         contentPanel.setBackground(Color.WHITE);
         add(contentPanel, BorderLayout.CENTER);
 
         if (isResizable) {
-            // Add window resizer
+            // add window resizer if needed
             new WindowResizer(this);
         }
     }
