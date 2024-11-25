@@ -20,8 +20,9 @@ public class CreateChatController {
         initListeners();
     }
 
+    @SuppressWarnings("unused")
     public void initListeners() {
-        ui.addCreateChatButtonListener(_ -> {
+        ui.addCreateChatButtonListener(e -> {
             try {
                 ArrayList<String> users = ui.getUsernames();
                 if (ui.isGroupMode()) {

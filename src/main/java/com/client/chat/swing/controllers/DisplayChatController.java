@@ -29,9 +29,10 @@ public class DisplayChatController {
         DisplayChatController.handleAddEventListener();
     }
 
+    @SuppressWarnings("unused")
     public static void handleAddEventListener() {
         // Modify the send button listener to use the new method
-        ui.addSendMessageListener(_ -> {
+        ui.addSendMessageListener(e -> {
             sendMessageIfNotSending();
         });
 

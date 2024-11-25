@@ -126,13 +126,14 @@ public class CustomTitleBar extends JPanel {
         this.closeAction = action;
     }
 
+    @SuppressWarnings("unused")
     private JPanel createWindowControls() {
         JPanel windowControls = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
         windowControls.setOpaque(false);
 
-        windowControls.add(createWindowButton("−", _ -> parentFrame.setState(JFrame.ICONIFIED)));
+        windowControls.add(createWindowButton("−", e -> parentFrame.setState(JFrame.ICONIFIED)));
 
-        windowControls.add(createWindowButton("□", _ -> {
+        windowControls.add(createWindowButton("□", e -> {
             if (parentFrame.getExtendedState() != JFrame.MAXIMIZED_BOTH) {
                 parentFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
             } else {
@@ -140,19 +141,20 @@ public class CustomTitleBar extends JPanel {
             }
         }));
         
-        windowControls.add(createWindowButton("×", _ -> closeAction.run()));
+        windowControls.add(createWindowButton("×", e -> closeAction.run()));
 
         return windowControls;
     }
 
+    @SuppressWarnings("unused")
     private JPanel createWindowControls(boolean isResizable) {
         JPanel windowControls = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
         windowControls.setOpaque(false);
 
-        windowControls.add(createWindowButton("−", _ -> parentFrame.setState(JFrame.ICONIFIED)));
+        windowControls.add(createWindowButton("−", e -> parentFrame.setState(JFrame.ICONIFIED)));
 
         if (isResizable) {
-            windowControls.add(createWindowButton("□", _ -> {
+            windowControls.add(createWindowButton("□", e -> {
                 if (parentFrame.getExtendedState() != JFrame.MAXIMIZED_BOTH) {
                     parentFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
                 } else {
@@ -161,7 +163,7 @@ public class CustomTitleBar extends JPanel {
             }));
         }
         
-        windowControls.add(createWindowButton("×", _ -> closeAction.run()));
+        windowControls.add(createWindowButton("×", e -> closeAction.run()));
 
         return windowControls;
     }

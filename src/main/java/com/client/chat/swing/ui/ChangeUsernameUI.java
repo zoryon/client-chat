@@ -171,9 +171,10 @@ public class ChangeUsernameUI extends JDialog {
         }
     }
 
+    @SuppressWarnings("unused")
     private void setupEventListeners() {
-        confirmButton.addActionListener(_ -> handleUsernameChange());
-        cancelButton.addActionListener(_ -> {
+        confirmButton.addActionListener(e -> handleUsernameChange());
+        cancelButton.addActionListener(e -> {
             changeResult.complete(false);
             dispose();
         });

@@ -37,6 +37,7 @@ public class CreateChatUI extends JDialog {
         validateButtonStates();
     }
 
+    @SuppressWarnings("unused")
     private void initializeComponents() {
         JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
         mainPanel.setBackground(CustomColors.BACKGROUND.getColor());
@@ -55,7 +56,7 @@ public class CreateChatUI extends JDialog {
         
         toggleModeButton = new JButton("New Group");
         toggleModeButton.setFont(new Font("Arial", Font.PLAIN, 12));
-        toggleModeButton.addActionListener(_ -> toggleMode());
+        toggleModeButton.addActionListener(e -> toggleMode());
         
         titlePanel.add(titleLabel, BorderLayout.WEST);
         titlePanel.add(toggleModeButton, BorderLayout.EAST);
@@ -112,7 +113,7 @@ public class CreateChatUI extends JDialog {
         addUserFieldButton = new JButton("+");
         addUserFieldButton.setFont(new Font("Arial", Font.BOLD, 14));
         addUserFieldButton.setPreferredSize(new Dimension(40, 40));
-        addUserFieldButton.addActionListener(_ -> addUsernameField());
+        addUserFieldButton.addActionListener(e -> addUsernameField());
         addUserFieldButton.setVisible(false);
 
         usernameSection.add(instructionLabel, BorderLayout.NORTH);

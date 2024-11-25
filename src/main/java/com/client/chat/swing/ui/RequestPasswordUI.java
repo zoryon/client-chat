@@ -143,9 +143,10 @@ public class RequestPasswordUI extends JDialog {
         }
     }
 
+    @SuppressWarnings("unused")
     private void setupEventListeners() {
-        confirmButton.addActionListener(_ -> handlePasswordConfirmation());
-        cancelButton.addActionListener(_ -> {
+        confirmButton.addActionListener(e -> handlePasswordConfirmation());
+        cancelButton.addActionListener(e -> {
             verificationResult.complete(false); // Segnaliamo la cancellazione
             dispose();
         });

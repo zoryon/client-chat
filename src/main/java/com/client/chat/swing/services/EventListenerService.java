@@ -124,7 +124,7 @@ public class EventListenerService extends Thread {
                         break;
                     default:
                 }
-            } catch (IOException | InterruptedException _) { }
+            } catch (IOException | InterruptedException ex) { }
         }
     }
 

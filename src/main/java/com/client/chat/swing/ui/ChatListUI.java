@@ -54,6 +54,7 @@ public class ChatListUI extends JPanel {
         instance = null;
     }
 
+    @SuppressWarnings("unused")
     private void initializeComponents() {
         // Create panel for title and new chat button
         JPanel topPanel = new JPanel(new BorderLayout());
@@ -78,7 +79,7 @@ public class ChatListUI extends JPanel {
         newChatButton.setForeground(CustomColors.MAIN_FOREGROUND.getColor());
         newChatButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
         newChatButton.setFocusPainted(false);
-        newChatButton.addActionListener(_ -> {
+        newChatButton.addActionListener(e -> {
             // Get the parent window
             Window parentWindow = SwingUtilities.getWindowAncestor(this);
 

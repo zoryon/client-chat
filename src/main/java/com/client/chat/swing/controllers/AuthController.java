@@ -20,9 +20,10 @@ public class AuthController {
         this.handleAddEventListeners();
     }
 
+    @SuppressWarnings("unused")
     private void handleAddEventListeners() {
         // add listener for signing up
-        ui.addSignUpListener((_) -> {
+        ui.addSignUpListener(e -> {
             try {
                 handleSignUp(ui.getUsername(), ui.getPassword());
             } catch (Exception ex) {
@@ -31,7 +32,7 @@ public class AuthController {
         });
 
         // add listener for signing in
-        ui.addSignInListener((_) -> {
+        ui.addSignInListener(e -> {
             try {
                 handleSignIn(ui.getUsername(), ui.getPassword());
             } catch (Exception ex) {
